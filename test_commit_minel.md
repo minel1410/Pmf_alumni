@@ -1,1 +1,0 @@
-Testni commit - Minel
