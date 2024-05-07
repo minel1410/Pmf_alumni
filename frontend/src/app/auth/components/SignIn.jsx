@@ -60,11 +60,11 @@ const SignIn = () => {
     if (valid) {
       console.log(formData);
       axios
-        .post("/login", formData)
+        .post("http://localhost:8000/login", formData)
         .then((response) => {
           setSuccesses(newSuccesses);
           setErrors(newErrors);
-          console.log(response.data);
+          console.log("success", response.data);
         })
         .catch((error) => {
           console.error(error);
