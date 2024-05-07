@@ -1,5 +1,0 @@
-/alumni-venv
-.env
-/backend/app/__pycache__
-/baza_temp
-/frontend/node_modules
