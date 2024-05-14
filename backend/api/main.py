@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Depends, HTTPException
 from starlette.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
+from passlib.context import CryptContext
 from database import SessionLocal, engine
 from models import User, CourseUser, Course, Department
 from fastapi import Depends, FastAPI, HTTPException, Request
@@ -71,6 +72,9 @@ async def get_studies(db: Session = Depends(get_db)):
     return smjerovi_niz
 
 
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+
 @app.post("/register")
 async def register_user(request: Request, db: Session = Depends(get_db)):
     request_data = await request.json()
@@ -84,21 +88,31 @@ async def register_user(request: Request, db: Session = Depends(get_db)):
             status_code=409, detail="Korisnik s ovom email adresom već postoji"
         )
 
+    # Hesiranje lozinke
+    hashed_password = pwd_context.hash(request_data["password"])
+
     # Ako korisnik ne postoji, dodajte novog korisnika u bazu podataka
     new_user = User(
         ime=request_data["name"],
         prezime=request_data["lastname"],
         email=request_data["email"],
-        password=request_data["password"],
+        password=hashed_password,  # Koristite heširanu lozinku
     )
     db.add(new_user)
     db.commit()
+    db.refresh(new_user)
 
     # Nakon commit-a, možete pristupiti ID-u novog korisnika
     new_user_id = new_user.id
+    new_course_user = CourseUser(
+        korisnik_id=new_user_id,
+        smjer_id=request_data["course_id"],
+        odsjek_id=request_data["department_id"],
+        studij_id=request_data["study_id"],
+    )
 
-    # Ovdje dodajte kod za dodavanje korisnika u tabelu CourseUser ako je potrebno
-    # Pretpostavljam da ćete koristiti sličan postupak kao i za dodavanje korisnika
+    db.add(new_course_user)
+    db.commit()
 
     # Vratite odgovor koji želite vratiti klijentu nakon uspješne registracije
     return {"message": "Korisnik je uspješno registrovan", "user_id": new_user_id}

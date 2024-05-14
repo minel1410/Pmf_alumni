@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 const Input = (props) => {
   return (
     <div className={cn("w-full my-3", props.className)}>
-      <div className="relative w-full min-w-[200px] h-10">
+      <div className="relative w-full h-10">
         <div className="absolute grid w-5 h-5 place-items-center text-blue-gray-500 top-2/4 right-3 -translate-y-2/4">
           <i className="fas fa-heart" aria-hidden="true"></i>
         </div>
