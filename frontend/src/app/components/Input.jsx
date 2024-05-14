@@ -1,6 +1,8 @@
+import { cn } from "@/lib/utils";
+
 const Input = (props) => {
   return (
-    <div className="w-full my-5">
+    <div className={cn("w-full my-3", props.className)}>
       <div className="relative w-full min-w-[200px] h-10">
         <div className="absolute grid w-5 h-5 place-items-center text-blue-gray-500 top-2/4 right-3 -translate-y-2/4">
           <i className="fas fa-heart" aria-hidden="true"></i>
@@ -31,7 +33,7 @@ const Input = (props) => {
           {props.label}
         </label>
       </div>
-      <p className={props.error ? "text-sm text-red-500 mt-1 ms-1" : "hidden"}>
+      <p className={props.error ? "text-sm text-red-500" : "hidden"}>
         {props.errorMessage}
       </p>
     </div>

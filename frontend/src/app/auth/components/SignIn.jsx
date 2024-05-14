@@ -2,6 +2,8 @@ import { useState, React } from "react";
 import Input from "../../components/Input";
 import Avatar from "../../components/Avatar";
 import axios from "axios";
+import Link from 'next/link';
+
 
 const SignIn = () => {
   const [formData, setFormData] = useState({
@@ -156,9 +158,9 @@ const SignIn = () => {
               Zapamti me
             </label>
           </div>
-          <a href="/passwordrecovery" className="font-light text-picton-blue-500">
+          <Link href="/password-recovery" className="font-light text-picton-blue-500">
             Zaboravljena lozinka?
-          </a>
+          </Link>
         </div>
         <button
           onClick={handleSubmit}
