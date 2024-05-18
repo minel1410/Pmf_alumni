@@ -60,21 +60,85 @@ const SignIn = () => {
     setErrors(newErrors);
 
     if (valid) {
-      console.log(formData);
-      axios
-        .post("http://localhost:8000/login", formData)
-        .then((response) => {
-          setSuccesses(newSuccesses);
-          setErrors(newErrors);
-          console.log("success", response.data);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    } else {
-      setErrors(newErrors);
-      setSuccesses(newSuccesses);
-    }
+  console.log(formData);
+  axios
+    .post("http://localhost:8000/auth/login", formData, {withCredentials: true})
+    .then((response) => {
+      setSuccesses((prevSuccesses) => ({
+        ...prevSuccesses,
+        email: true,
+        password: true,
+      }));
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        email: "",
+        password: "",
+      }));
+      console.log("success", response.data);
+      window.location.href = "/"; 
+    })
+    .catch((error) => {
+      console.error(error);
+      if (error.response) {
+        if (error.response.status === 404) {
+          setErrors((prevErrors) => ({
+            ...prevErrors,
+            email: "Korisnik sa datim emailom nije pronađen.",
+          }));
+          setSuccesses((prevSuccesses) => ({
+            ...prevSuccesses,
+            email: false,
+          }));
+        } else if (error.response.status === 401) {
+          setErrors((prevErrors) => ({
+            ...prevErrors,
+            password: "Pogrešan password",
+          }));
+          setSuccesses((prevSuccesses) => ({
+            ...prevSuccesses,
+            password: false,
+          }));
+        } else {
+          setErrors((prevErrors) => ({
+            ...prevErrors,
+            general: "Došlo je do greške prilikom prijave",
+          }));
+          setSuccesses((prevSuccesses) => ({
+            ...prevSuccesses,
+            email: false,
+            password: false,
+          }));
+        }
+      } else if (error.request) {
+        console.error("Error request:", error.request);
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          general: "Nema odgovora sa servera. Pokušajte ponovo kasnije.",
+        }));
+        setSuccesses((prevSuccesses) => ({
+          ...prevSuccesses,
+          email: false,
+          password: false,
+        }));
+      } else {
+        console.error("Error message:", error.message);
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          general: "Došlo je do greške prilikom postavljanja zahtjeva",
+        }));
+        setSuccesses((prevSuccesses) => ({
+          ...prevSuccesses,
+          email: false,
+          password: false,
+        }));
+      }
+    });
+} else {
+  setErrors(newErrors);
+  setSuccesses(newSuccesses);
+}
+
+
   };
   return (
     <div className="form-container sign-in-container absolute top-0 h-full transition duration-500 ease-in-out left-0 w-full lg:w-1/2 z-2 flex flex-col">

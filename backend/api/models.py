@@ -1,5 +1,7 @@
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Text
 from database import Base
+from typing import Annotated, Union
+from pydantic import BaseModel
 
 
 class User(Base):
@@ -13,6 +15,7 @@ class User(Base):
     is_admin = Column(Boolean, nullable=True)  # is_admin može biti None
     profilna_slika = Column(String, nullable=True)  # profilna_slika može biti None
     diploma_slika = Column(String, nullable=True)  # diploma_slika može biti None
+    verifikovan = Column(Boolean, nullable=True, default=False)
     response_model = None
 
 
@@ -46,3 +49,12 @@ class Study(Base):
 
     studij_id = Column(Integer, primary_key=True, autoincrement=True)
     naziv = Column(Text)
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
+class TokenData(BaseModel):
+    username: Union[str, None] = None

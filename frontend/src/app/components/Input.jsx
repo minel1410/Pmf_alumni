@@ -1,17 +1,32 @@
 import { cn } from "@/lib/utils";
+import { useState } from "react";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEyeSlash, faEye } from '@fortawesome/free-solid-svg-icons';
 
 const Input = (props) => {
+  const [showPassword, setShowPassword] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
   return (
     <div className={cn("w-full my-3", props.className)}>
       <div className="relative w-full h-10">
-        <div className="absolute grid w-5 h-5 place-items-center text-blue-gray-500 top-2/4 right-3 -translate-y-2/4">
-          <i className="fas fa-heart" aria-hidden="true"></i>
-        </div>
+        {props.type === "password" && (
+          <div
+            className="absolute grid w-5 h-5 place-items-center text-blue-gray-500 top-2/4 right-3 -translate-y-2/4 cursor-pointer"
+            onClick={togglePasswordVisibility}
+          >
+            <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye}></FontAwesomeIcon>
+          </div>
+        )}
         <input
-          type={props.type}
+          type={showPassword ? "text" : props.type}
           name={props.name}
           onChange={props.onChange}
           value={props.value}
+          disabled={props.disabled}
           className={
             props.error
               ? "peer h-full w-full rounded-[7px] border border-red-500 border-t-transparent bg-transparent px-3 py-2.5 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border placeholder-shown:border-red-500 placeholder-shown:border-t-red-500 focus:border-2 focus:border-red-500 focus:border-t-transparent focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50"

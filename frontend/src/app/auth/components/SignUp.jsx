@@ -32,10 +32,11 @@ const SignUp = () => {
   const [selectedDepartment, setSelectedDepartment] = useState(
     "Odsjek za biologiju",
   );
+  const [regSuccess, setRegSuccess] = useState(false)
 
   useEffect(() => {
     axios
-      .get("http://localhost:8000/studies")
+      .get("http://localhost:8000/auth/studies")
       .then((response) => {
         setStudies(response.data);
       })
@@ -181,7 +182,7 @@ const SignUp = () => {
     if (valid) {
       try {
         const response = await axios.post(
-          "http://localhost:8000/register",
+          "http://localhost:8000/auth/register",
           formData,
         );
         setSuccesses({
@@ -198,6 +199,7 @@ const SignUp = () => {
           password: "",
           pwc: "",
         });
+        setRegSuccess(true)
       } catch (error) {
         console.error(error);
         if (error.response && error.response.status === 409) {
@@ -242,6 +244,7 @@ const SignUp = () => {
             error={errors.name}
             value={formData.name}
             success={successes.name}
+            disabled={regSuccess}
           />
           <Input
             label="Prezime"
@@ -252,6 +255,7 @@ const SignUp = () => {
             error={errors.lastname}
             value={formData.lastname}
             success={successes.lastname}
+            disabled={regSuccess}
           />
         </div>
 
@@ -265,6 +269,7 @@ const SignUp = () => {
                 ? "peer h-full w-full rounded-[7px] border border-green-500 border-t-transparent bg-transparent px-3 py-2.5 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border placeholder-shown:border-green-500 placeholder-shown:border-t-green-500 focus:border-2 focus:border-green-500 focus:border-t-transparent focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50"
                 : "peer h-full w-full rounded-[7px] border border-blue-gray-200 border-t-transparent bg-transparent px-3 py-2.5 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 empty:!bg-picton-blue-500 focus:border-2 focus:border-picton-blue-500 focus:border-t-transparent focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50"
             }
+            disabled={regSuccess}
           >
             <option value="1">Stručni studij</option>
             <option value="2">Bachelor</option>
@@ -293,6 +298,7 @@ const SignUp = () => {
                 ? "peer h-full w-full rounded-[7px] border border-green-500 border-t-transparent bg-transparent px-3 py-2.5 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border placeholder-shown:border-green-500 placeholder-shown:border-t-green-500 focus:border-2 focus:border-green-500 focus:border-t-transparent focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50"
                 : "peer h-full w-full rounded-[7px] border border-blue-gray-200 border-t-transparent bg-transparent px-3 py-2.5 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 empty:!bg-picton-blue-500 focus:border-2 focus:border-picton-blue-500 focus:border-t-transparent focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50"
             }
+            disabled={regSuccess}
           >
             {uniqueDepartments.map((department, index) => (
               <option key={index} value={department}>
@@ -319,6 +325,7 @@ const SignUp = () => {
                 ? "peer h-full w-full rounded-[7px] border border-green-500 border-t-transparent bg-transparent px-3 py-2.5 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border placeholder-shown:border-green-500 placeholder-shown:border-t-green-500 focus:border-2 focus:border-green-500 focus:border-t-transparent focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50"
                 : "peer h-full w-full rounded-[7px] border border-blue-gray-200 border-t-transparent bg-transparent px-3 py-2.5 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 empty:!bg-picton-blue-500 focus:border-2 focus:border-picton-blue-500 focus:border-t-transparent focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50"
             }
+            disabled={regSuccess}
           >
             {filteredStudies.map((study) => (
               <option key={study.smjer_id} value={study.smjer_id}>
@@ -346,6 +353,7 @@ const SignUp = () => {
           error={errors.email}
           value={formData.email}
           success={successes.email}
+          disabled={regSuccess}
         />
         <Input
           label="Password"
@@ -356,6 +364,7 @@ const SignUp = () => {
           error={errors.password}
           value={formData.password}
           success={successes.password}
+          disabled={regSuccess}
         />
         <Input
           label="Confirm password"
@@ -366,16 +375,19 @@ const SignUp = () => {
           error={errors.pwc}
           value={formData.pwc}
           success={successes.pwc}
+          disabled={regSuccess}
         />
         <button
           type="submit"
-          className="mt-6 align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-sm py-4 px-6 rounded-lg bg-picton-blue-500 text-white shadow-md shadow-picton-blue-500/10 hover:shadow-3xl hover:shadow-picton-blue-500/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none block w-full"
+          className="mt-6 align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-sm py-4 px-6 rounded-lg bg-picton-blue-500 text-white shadow-md shadow-picton-blue-500/10 hover:shadow-lg hover:shadow-picton-blue-500/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none block w-full"
+          disabled={regSuccess}
         >
           Sign up
         </button>
         <p className="mt-3 text-blue-gray-500 lg:hidden">
           Već imate račun? <a href="#">Prijavite se.</a>
         </p>
+        <p className={regSuccess ? ("text-md text-green-500") : ("hidden")}>Uspjesno ste izvrsili registraciju. Molimo prijavite se</p>
         <p className={existingUser ? "text-red-500" : "hidden"}>
           Korisnik sa tom email adresom vec postoji
         </p>
