@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from datetime import timedelta
 from utils import authentication, emailUtil
 from database import get_db
+from datetime import datetime, timedelta
 from models import User, CourseUser, Course, Department, Token
 
 router = APIRouter()
@@ -139,23 +140,26 @@ async def login_user(
             token_expires = timedelta(days=30)
             max_age = token_expires.total_seconds()
         else:
-            token_expires = timedelta(minutes=30)
-            max_age = None  # Session cookie
+            token_expires = timedelta(days=30)
+            max_age = token_expires.total_seconds()
 
         token = authentication.create_access_token(
             {"user_id": user.id},
             expires_delta=token_expires,
         )
 
+        expire_date = datetime.utcnow() + token_expires
+
         cookie_params = {
             "key": "access_token",
-            "value": token,  # Bez zagrada oko tokena
+            "value": token,
             "httponly": True,
-            "samesite": "Strict",  # Mora biti string
+            "samesite": "Strict",
+            "expires": (
+                expire_date.strftime("%a, %d-%b-%Y %H:%M:%S GMT") if remember else None
+            ),
         }
-
-        if remember:
-            cookie_params["max_age"] = max_age
+        print(cookie_params)
 
         response.set_cookie(**cookie_params)
         return {"message": "Login successful", "cookie": cookie_params}

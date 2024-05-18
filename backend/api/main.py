@@ -1,16 +1,13 @@
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
-from routers import auth_router  # Import vaših ruta
+from routers import auth_router
 from database import engine
 
 
 def start_application() -> FastAPI:
     app = FastAPI()
 
-    origins = [
-        "http://localhost:3000",  # Zamijenite s vašom frontend URL-om
-        # Dodajte druge dozvoljene URL-ove
-    ]
+    origins = ["http://localhost:3000"]
 
     app.add_middleware(
         CORSMiddleware,
