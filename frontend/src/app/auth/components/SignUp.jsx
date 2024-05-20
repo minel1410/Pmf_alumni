@@ -181,10 +181,8 @@ const SignUp = () => {
 
     if (valid) {
       try {
-        const response = await axios.post(
-          "http://localhost:8000/auth/register",
-          formData,
-        );
+        const response = await axios
+          .post("http://localhost:8000/auth/register", formData, {withCredentials: true})
         setSuccesses({
           name: true,
           lastname: true,
@@ -200,6 +198,7 @@ const SignUp = () => {
           pwc: "",
         });
         setRegSuccess(true)
+        window.location.href="/auth/interests"
       } catch (error) {
         console.error(error);
         if (error.response && error.response.status === 409) {

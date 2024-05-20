@@ -2,28 +2,21 @@
 
 import { useState } from "react";
 
-export default function Test( {}) {
-  const [showSidebar, setShowSidebar] = useState(false);
 
-  return (
-    <html>
-      <body className="w-full h-screen bg-red-500 grid grid-cols-6">
-        {/* Sidebar */}
-        <div className={`col-span-1 xl:col-span-1 bg-blue-500 overflow-hidden transition-all duration-500 ${showSidebar ? "w-100" : "w-0"}`}>
-          Sidebar
-        </div>
-        
-        {/* Content */}
-        <div className="col-span-6 xl:col-span-5 bg-green-500">Content</div>
+export default function Test2(){
+   return(
+      <div className="border-2 border-gray-200 rounded-lg flex justify-between items-center p-4">
 
-        {/* Button to toggle sidebar */}
-        <button 
-          className="fixed bottom-4 right-4 p-2 bg-blue-600 text-white rounded-full shadow-md hover:bg-blue-700 focus:outline-none"
-          onClick={() => setShowSidebar(!showSidebar)}
-        >
-          {showSidebar ? "Hide Sidebar" : "Show Sidebar"}
-        </button>
-      </body>
-    </html>
-  );
+      <div className="flex gap-2 items-center">
+         <img src="https://flowbite.com/docs/images/people/profile-picture-5.jpg" className="w-20 h-20 rounded-full"></img>
+         <div>
+            <p className="font-bold text-md">Jack Adams</p>
+            <p className="text-gray-400">Prodcust Designer</p>
+            <p className="text-gray-400">Los Angeles</p>
+         </div>
+      </div>
+      <button className="px-4 py-1 border-2 border-gray-300 rounded-md">Edit</button>
+      
+    </div>
+   )
 }

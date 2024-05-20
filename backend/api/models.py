@@ -50,6 +50,13 @@ class Study(Base):
     studij_id = Column(Integer, primary_key=True, autoincrement=True)
     naziv = Column(Text)
 
+class Tag(Base):
+    __tablename__ = "tag"
+
+    tag_id = Column(Integer, primary_key=True, autoincrement=True)
+    naziv = Column(Text)
+
+
 
 class Token(BaseModel):
     access_token: str

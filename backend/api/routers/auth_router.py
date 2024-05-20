@@ -5,7 +5,7 @@ from datetime import timedelta
 from utils import authentication, emailUtil
 from database import get_db
 from datetime import datetime, timedelta
-from models import User, CourseUser, Course, Department, Token
+from models import User, CourseUser, Course, Department, Token, Tag
 
 router = APIRouter()
 
@@ -31,7 +31,9 @@ async def get_studies(db: Session = Depends(get_db)):
 
 
 @router.post("/register")
-async def register_user(request: Request, db: Session = Depends(get_db)):
+async def register_user(
+    request: Request, response: Response, db: Session = Depends(get_db)
+):
     request_data = await request.json()
 
     existing_user = db.query(User).filter(User.email == request_data["email"]).first()
@@ -62,7 +64,28 @@ async def register_user(request: Request, db: Session = Depends(get_db)):
     db.add(new_course_user)
     db.commit()
 
-    return {"message": "Korisnik je uspješno registrovan", "user_id": new_user.id}
+    token_expires = timedelta(days=30)
+    max_age = token_expires.total_seconds()
+
+    token = authentication.create_access_token(
+        {"user_id": new_user.id},
+        expires_delta=token_expires,
+    )
+
+    expire_date = datetime.utcnow() + token_expires
+
+    # Setting the cookie individually
+    response.set_cookie(key="access_token", value=token, httponly=True, samesite="None")
+
+    return {
+        "message": "Login successful",
+        "cookie": {
+            "key": "access_token",
+            "value": token,
+            "httponly": True,
+            "samesite": "None",
+        },
+    }
 
 
 @router.post("/password-recovery")
@@ -136,12 +159,8 @@ async def login_user(
             status_code=404, detail="Korisnik sa datim emailom nije pronađen."
         )
     if authentication.verify_password(password, user.password):
-        if remember:
-            token_expires = timedelta(days=30)
-            max_age = token_expires.total_seconds()
-        else:
-            token_expires = timedelta(days=30)
-            max_age = token_expires.total_seconds()
+        token_expires = timedelta(days=30)
+        max_age = token_expires.total_seconds()
 
         token = authentication.create_access_token(
             {"user_id": user.id},
@@ -171,6 +190,7 @@ async def login_user(
 @router.get("/get_cookies/")
 async def get_cookies(request: Request, db: Session = Depends(get_db)):
     cookie = request.cookies.get("access_token")
+    print(cookie)
     if not cookie:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="No access token provided"
@@ -179,3 +199,9 @@ async def get_cookies(request: Request, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.id == user_id).first()
     print(user)
     return user
+
+
+@router.get("/tags")
+async def get_tags(db: Session = Depends(get_db)):
+    tags = db.query(Tag).all()
+    return tags
