@@ -18,7 +18,6 @@ const[user, setUser] = useState({})
         const response = await axios.get("http://localhost:8000/auth/tags");
         if (response.status === 200) {
           setTags(response.data);
-          console.log(response.data);
         } else {
           console.error("Neuspješan zahtjev za tagovima");
         }
@@ -28,20 +27,22 @@ const[user, setUser] = useState({})
     }
 
     async function fetchUser() {
-      try {
-        const response = await axios.get("http://localhost:8000/auth/get_cookies");
-        if (response.status === 200) {
-          setUser(response.data);
-          console.log(response.data);
-        } else {
-          console.error("Neuspješan zahtjev za userom");
-          window.location.href = '/auth'
-        }
-      } catch (error) {
-        console.error("Greška prilikom dohvatanja usera:", error);
-        window.location.href = '/auth'
-      }
+  try {
+    const response = await axios.get("http://localhost:8000/auth/get_cookies", { withCredentials: true });
+    console.log('Response status:', response.status);  // Dodaj ovu liniju za debugiranje
+    if (response.status === 200) {
+      setUser(response.data);
+      console.log('User data:', response.data);  // Dodaj ovu liniju za debugiranje
+    } else {
+      console.error("Neuspješan zahtjev za userom");
+      window.location.href = '/auth';
     }
+  } catch (error) {
+    console.error("Greška prilikom dohvatanja usera:", error);
+    window.location.href = '/auth';
+  }
+}
+
 
     fetchTags();
     fetchUser();
@@ -56,15 +57,28 @@ const[user, setUser] = useState({})
     console.log(interests)
   };
 
-  /* async handleSubmit () {
-
-    try{
-      await axios.post("http;//localhost:8000/auth/interests-post")
-    }catch (error) {
-        console.error("Greška prilikom dohvatanja usera:", error);
-        window.location.href = '/auth'
+  const handleSubmit = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/auth/interests-post", 
+        { user, interests },
+        { withCredentials: true } // Dodaj ovo ako koristiš kolačiće
+      );
+      if (response.status === 200) {
+        // Uspješan zahtjev
+        console.log('Response data:', response.data);
+        window.location.href = '/';
+      } else {
+        // Neuspješan zahtjev (iako je status 2xx)
+        console.error('Unexpected response status:', response.status);
+        window.location.href = '/auth';
       }
-  } */
+    } catch (error) {
+      // Greška u zahtjevu
+      console.error('Error:', error.response ? error.response.data : error.message);
+      window.location.href = '/auth';
+    }
+  };
 
 
   return (
@@ -83,9 +97,9 @@ const[user, setUser] = useState({})
   <button
           type="submit"
           className="mt-24 align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-sm py-4 px-6 rounded-lg bg-picton-blue-500 text-white shadow-md shadow-picton-blue-500/10 hover:shadow-lg hover:shadow-picton-blue-500/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none block w-full"
-          onClicke = {handleSubmit}
+          onClick = {handleSubmit}
         >
-          Sign up
+          dalje
         </button>
 </div>
 

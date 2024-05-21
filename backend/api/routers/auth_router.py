@@ -5,7 +5,7 @@ from datetime import timedelta
 from utils import authentication, emailUtil
 from database import get_db
 from datetime import datetime, timedelta
-from models import User, CourseUser, Course, Department, Token, Tag
+from models import User, CourseUser, Course, Department, Token, Tag, TagUser
 
 router = APIRouter()
 
@@ -64,27 +64,24 @@ async def register_user(
     db.add(new_course_user)
     db.commit()
 
-    token_expires = timedelta(days=30)
-    max_age = token_expires.total_seconds()
-
+    token_expires = timedelta(days=30)  # Ovo ostaje za generiranje tokena
     token = authentication.create_access_token(
         {"user_id": new_user.id},
         expires_delta=token_expires,
     )
 
-    expire_date = datetime.utcnow() + token_expires
+    cookie_params = {
+        "key": "access_token",
+        "value": token,
+        "httponly": True,
+        "samesite": "Strict",
+    }
 
-    # Setting the cookie individually
-    response.set_cookie(key="access_token", value=token, httponly=True, samesite="None")
+    response.set_cookie(**cookie_params)
 
     return {
-        "message": "Login successful",
-        "cookie": {
-            "key": "access_token",
-            "value": token,
-            "httponly": True,
-            "samesite": "None",
-        },
+        "message": "Registration successful",
+        "cookie": cookie_params,
     }
 
 
@@ -205,3 +202,15 @@ async def get_cookies(request: Request, db: Session = Depends(get_db)):
 async def get_tags(db: Session = Depends(get_db)):
     tags = db.query(Tag).all()
     return tags
+
+
+@router.post("/interests-post")
+async def post_tags(request: Request, db: Session = Depends(get_db)):
+    request_data = await request.json()
+    user = request_data["user"]
+    interests = request_data["interests"]
+    for interest in interests:
+        new_tag = TagUser(korisnik_id=user["id"], tag_id=interest)
+        db.add(new_tag)
+    db.commit()
+    return {"success": True}

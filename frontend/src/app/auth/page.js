@@ -1,15 +1,33 @@
 "use client";
 import "./auth.css";
-import React, { useEffect } from "react";
-import axios from "axios";
+import React, { useEffect, useState } from "react";
 import SignIn from "./components/SignIn";
 import SignUp from "./components/SignUp";
 import { motion } from "framer-motion"
+import { get_jwt } from "@/lib/utils";
+import axios from "axios";
 
 const Authentication = () => {
 
+  const [jwt, setJwt] = useState(null);
 
+  useEffect(() => {
+    const fetchJwt = async () => {
+      const token = await get_jwt(); // Pretpostavljamo da `get_jwt` vraća JWT ili `null`
+      setJwt(token);
+    };
 
+    fetchJwt();
+  }, []);
+
+  useEffect(() => {
+    console.log('JWT:', jwt); // Dodaj ovu liniju za debugiranje
+    if (jwt) {
+      window.location.href = '/';
+    }
+  }, [jwt]);
+
+  
   const signUpButtonRef = React.createRef();
   const signInButtonRef = React.createRef();
   const containerRef = React.createRef();

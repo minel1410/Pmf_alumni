@@ -50,12 +50,19 @@ class Study(Base):
     studij_id = Column(Integer, primary_key=True, autoincrement=True)
     naziv = Column(Text)
 
+
 class Tag(Base):
     __tablename__ = "tag"
 
     tag_id = Column(Integer, primary_key=True, autoincrement=True)
     naziv = Column(Text)
 
+
+class TagUser(Base):
+    __tablename__ = "tag_korisnik"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    korisnik_id = Column(Integer, ForeignKey("korisnik.id"), nullable=False)
+    tag_id = Column(Integer, ForeignKey("tag.tag_id"), nullable=False)
 
 
 class Token(BaseModel):
