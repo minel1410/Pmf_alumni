@@ -67,7 +67,7 @@ const[user, setUser] = useState({})
       if (response.status === 200) {
         // Uspješan zahtjev
         console.log('Response data:', response.data);
-        window.location.href = '/';
+        window.location.href = '/auth/upload';
       } else {
         // Neuspješan zahtjev (iako je status 2xx)
         console.error('Unexpected response status:', response.status);

@@ -1,4 +1,14 @@
-from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
+from fastapi import (
+    APIRouter,
+    Depends,
+    HTTPException,
+    Request,
+    Response,
+    status,
+    File,
+    UploadFile,
+    Form,
+)
 from fastapi.security import OAuth2AuthorizationCodeBearer
 from sqlalchemy.orm import Session
 from datetime import timedelta
@@ -6,6 +16,9 @@ from utils import authentication, emailUtil
 from database import get_db
 from datetime import datetime, timedelta
 from models import User, CourseUser, Course, Department, Token, Tag, TagUser
+import uuid
+import os
+import json
 
 router = APIRouter()
 
@@ -214,3 +227,49 @@ async def post_tags(request: Request, db: Session = Depends(get_db)):
         db.add(new_tag)
     db.commit()
     return {"success": True}
+
+
+@router.post("/diploma-upload")
+async def post_diploma(
+    file: UploadFile = File(...), user: str = Form(...), db: Session = Depends(get_db)
+):
+    IMAGEDIR = "../images/"
+    os.makedirs(IMAGEDIR, exist_ok=True)
+
+    # Allowed content types
+    allowed_content_types = [
+        "image/jpeg",
+        "image/png",
+        "image/jpg",
+        "image/svg+xml",
+        "image/heic",
+        "image/gif",
+    ]
+
+    # Validate content type
+    if file.content_type not in allowed_content_types:
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid file type. Only jpg, jpeg, and png are allowed.",
+        )
+
+    try:
+        user_data = json.loads(user)
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=400, detail="Invalid user data")
+
+    user_id = user_data.get("id")
+    if not user_id:
+        raise HTTPException(status_code=400, detail="User ID is required")
+
+    filename = f"{uuid.uuid4()}_{user_data['ime']}_{user_data['prezime']}_{user_data['id']}.jpg"
+    file_path = os.path.join(IMAGEDIR, filename)
+
+    with open(file_path, "wb") as f:
+        contents = await file.read()
+        f.write(contents)
+
+    db.query(User).filter(User.id == user_id).update({"diploma_slika": filename})
+    db.commit()
+
+    return {"filename": filename}
