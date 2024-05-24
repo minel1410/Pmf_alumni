@@ -1,7 +1,6 @@
 import { Inter } from "next/font/google";
+import Layout from "@/app/components/Layout";
 import "../../globals.css";
-import Nav from "../../components/Nav";
-import Sidebar from "../../components/Sidebar"
 
 
 const inter = Inter({ subsets: ["latin"] });
@@ -18,17 +17,13 @@ export default function RootLayout({ children }) {
     <html>
       <body>
       
-<Nav></Nav>
-<Sidebar></Sidebar>
+
+        <Layout>
+            {children}
+        </Layout>
 
 
 
-
-<div class="p-4 sm:ml-64 w-full h-full">
-   <div class="p-4 mt-14 w-full">
-    {children}
-   </div>
-</div>
 
       </body>
     </html>
