@@ -56,7 +56,7 @@ const Authentication = () => {
     initial={{ opacity: 0, scale: 0.5 }}
     animate={{ opacity: 1, scale: 1 }}
     transition={{ duration: 0.5 }}
-      className="container w-full h-full md:h-4/5 relative overflow-hidden bg-white sm:rounded-lg"
+      className="container w-full h-full md:h-4/5 relative overflow-y-scroll overflow-x-hidden bg-white sm:rounded-lg"
       id="container"
       ref={containerRef}
     >

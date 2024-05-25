@@ -33,6 +33,7 @@ class User(Base):
     )  # datum_registracije može biti None
     zadnji_login = Column(Date, nullable=True)  # zadnji_login može biti None
     cv = Column(String, nullable=True)  # cv može biti None
+    mjesto_stanovanja = Column(String, nullable=True)
     response_model = None
 
 

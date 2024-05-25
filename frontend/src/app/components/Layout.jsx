@@ -202,7 +202,7 @@ const Layout = ({children}) => {
       </ul>
                 </div>
             </aside>
-            <div class="p-4 sm:ml-64 w-full h-full">
+            <div class="p-4 md:ml-64 w-full h-full">
    <div class="p-4 mt-14 w-full">
     {children}
    </div>

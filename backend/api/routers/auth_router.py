@@ -11,11 +11,12 @@ from fastapi import (
 )
 from fastapi.security import OAuth2AuthorizationCodeBearer
 from sqlalchemy.orm import Session
+from sqlalchemy import select
 from datetime import timedelta
 from utils import authentication, emailUtil
 from database import get_db
 from datetime import datetime, timedelta
-from models import User, CourseUser, Course, Department, Token, Tag, TagUser
+from models import User, CourseUser, Course, Department, Token, Tag, TagUser, Study
 import uuid
 import os
 import json
@@ -273,3 +274,61 @@ async def post_diploma(
     db.commit()
 
     return {"filename": filename}
+
+
+@router.get("/user-info/{id}")
+async def get_user_info(id: int, db: Session = Depends(get_db)):
+    # Prvi upit za dobijanje informacija o korisniku
+    korisnik_info_query = (
+        select(
+            User.id,
+            User.ime,
+            User.prezime,
+            User.email,
+            User.is_admin,
+            User.profilna_slika,
+            User.diploma_slika,
+            User.verifikovan,
+            User.broj_indeksa,
+            User.zanimanje,
+            User.godina_diplomiranja,
+            User.trenutni_poslodavac,
+            User.linkedin_profil,
+            User.broj_telefona,
+            User.datum_registracije,
+            User.zadnji_login,
+            User.cv,
+            User.mjesto_stanovanja,
+            Department.naziv.label("odsjek_naziv"),
+            Study.naziv.label("studij_naziv"),
+            Course.naziv.label("smjer_naziv"),
+            Department.naziv.label("odsjek_naziv"),
+            Study.naziv.label("studij_naziv"),
+            Course.naziv.label("smjer_naziv"),
+        )
+        .join(CourseUser, CourseUser.korisnik_id == User.id)
+        .join(Department, Department.odsjek_id == CourseUser.odsjek_id)
+        .join(Course, Course.smjer_id == CourseUser.smjer_id)
+        .join(Study, Study.studij_id == CourseUser.studij_id)
+        .where(User.id == id)
+    )
+
+    korisnik_info_result = db.execute(korisnik_info_query).first()
+
+    if not korisnik_info_result:
+        raise HTTPException(status_code=404, detail="Korisnik not found")
+
+    # Drugi upit za dobijanje tagova korisnika
+    tag_query = (
+        select(Tag.naziv)
+        .join(TagUser, TagUser.tag_id == Tag.tag_id)
+        .where(TagUser.korisnik_id == id)
+    )
+
+    tag_results = db.execute(tag_query).all()
+
+    # Kreiranje rezultata kao JSON
+    korisnik_info = korisnik_info_result._asdict()
+    tags = [tag.naziv for tag in tag_results]
+
+    return {"korisnik": korisnik_info, "tags": tags}
