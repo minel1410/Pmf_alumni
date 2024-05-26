@@ -7,7 +7,7 @@ function Tag(props) {
 
   const handleClick = () => {
     setSelected(!selected);
-    props.onTagClick(props.id); // Pozovi funkciju koja se proslijeđuje kroz propse da bi ažurirala interese
+    props.onTagClick(props.id); 
   };
 
   return (
@@ -17,7 +17,7 @@ function Tag(props) {
           ? "px-3 py-1 border border-picton-blue-500 bg-picton-blue-500 text-white rounded-full hover:cursor-pointer transition-all"
           : "px-3 py-1 border border-picton-blue-500 text-picton-blue-500 rounded-full hover:shadow-2xl hover:cursor-pointer transition-all"
       }
-      onClick={handleClick} // Postavi handleClick funkciju kao onClick handler
+      onClick={handleClick} 
     >
       <p className="select-none">{props.text}</p>
     </div>

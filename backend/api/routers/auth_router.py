@@ -192,7 +192,7 @@ async def login_user(
         print(cookie_params)
 
         response.set_cookie(**cookie_params)
-        return {"message": "Login successful", "cookie": cookie_params}
+        return {"message": "Login successful", "cookie": cookie_params, "id": user.id}
 
     else:
         raise HTTPException(status_code=401, detail="Netačan password")
@@ -318,7 +318,6 @@ async def get_user_info(id: int, db: Session = Depends(get_db)):
     if not korisnik_info_result:
         raise HTTPException(status_code=404, detail="Korisnik not found")
 
-    # Drugi upit za dobijanje tagova korisnika
     tag_query = (
         select(Tag.naziv)
         .join(TagUser, TagUser.tag_id == Tag.tag_id)
@@ -327,7 +326,6 @@ async def get_user_info(id: int, db: Session = Depends(get_db)):
 
     tag_results = db.execute(tag_query).all()
 
-    # Kreiranje rezultata kao JSON
     korisnik_info = korisnik_info_result._asdict()
     tags = [tag.naziv for tag in tag_results]
 

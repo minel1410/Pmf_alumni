@@ -21,10 +21,10 @@ EMAIL_SUBJECT_RESET = "Zahtjev za resetovanje lozinke"
 def send_reset_email(email: str, token: str):
     reset_url = f"http://localhost:3000/password-reset?token={token}"
     html = f"""
-    <p>Zdravo,</p>
+    <p>Poštovanje,</p>
     <p>Za resetovanje lozinke, kliknite na sljedeći link:</p>
     <p><a href="{reset_url}">{reset_url}</a></p>
-    <p>Ako niste zatražili resetovanje, ignorirajte ovaj email.</p>
+    <p>Ako niste zatražili resetovanje, ignorišite ovaj email.</p>
     """
     msg = MIMEMultipart()
     msg["From"] = EMAIL_FROM
