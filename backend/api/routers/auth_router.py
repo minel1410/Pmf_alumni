@@ -9,14 +9,13 @@ from fastapi import (
     UploadFile,
     Form,
 )
-from fastapi.security import OAuth2AuthorizationCodeBearer
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 from datetime import timedelta
 from utils import authentication, emailUtil
 from database import get_db
 from datetime import datetime, timedelta
-from models import User, CourseUser, Course, Department, Token, Tag, TagUser, Study
+from models import User, CourseUser, Course, Department, Tag, TagUser, Study
 import uuid
 import os
 import json
@@ -78,7 +77,7 @@ async def register_user(
     db.add(new_course_user)
     db.commit()
 
-    token_expires = timedelta(days=30)  # Ovo ostaje za generiranje tokena
+    token_expires = timedelta(days=30)  
     token = authentication.create_access_token(
         {"user_id": new_user.id},
         expires_delta=token_expires,
@@ -201,7 +200,6 @@ async def login_user(
 @router.get("/get_cookies/")
 async def get_cookies(request: Request, db: Session = Depends(get_db)):
     cookie = request.cookies.get("access_token")
-    print(cookie)
     if not cookie:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="No access token provided"
@@ -237,7 +235,6 @@ async def post_diploma(
     IMAGEDIR = "../images/"
     os.makedirs(IMAGEDIR, exist_ok=True)
 
-    # Allowed content types
     allowed_content_types = [
         "image/jpeg",
         "image/png",
@@ -247,7 +244,6 @@ async def post_diploma(
         "image/gif",
     ]
 
-    # Validate content type
     if file.content_type not in allowed_content_types:
         raise HTTPException(
             status_code=400,
@@ -278,7 +274,6 @@ async def post_diploma(
 
 @router.get("/user-info/{id}")
 async def get_user_info(id: int, db: Session = Depends(get_db)):
-    # Prvi upit za dobijanje informacija o korisniku
     korisnik_info_query = (
         select(
             User.id,
@@ -330,3 +325,15 @@ async def get_user_info(id: int, db: Session = Depends(get_db)):
     tags = [tag.naziv for tag in tag_results]
 
     return {"korisnik": korisnik_info, "tags": tags}
+
+@router.delete("/log_out")
+async def log_out(request: Request, response: Response, db: Session = Depends(get_db)):
+    cookie = request.cookies.get("access_token")
+    if not cookie:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="No access token provided"
+        )
+
+    response.delete_cookie("access_token")
+    
+    return {"detail": "Successfully logged out"}
