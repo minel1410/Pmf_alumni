@@ -1,5 +1,6 @@
 from pydantic import BaseModel, HttpUrl
 from typing import Optional
+from datetime import datetime
 
 
 class UserSchema(BaseModel):
@@ -56,3 +57,27 @@ class RegisterSchema(BaseModel):
     user: UserSchema
     course: CourseSchema
     department: DepartmentSchema
+
+
+class MessageBase(BaseModel):
+    tekst_poruke: str
+    datum_slanja: datetime
+    posiljalac_id: int
+    primalac_id: int
+
+
+class MessageCreate(BaseModel):
+    tekst_poruke: str
+    posiljalac_id: int
+    primalac_id: int
+
+
+class MessageResponse(BaseModel):
+    poruka_id: int
+    tekst_poruke: str
+    datum_slanja: datetime
+    posiljalac_id: int
+    primalac_id: int
+
+    class Config:
+        orm_mode = True

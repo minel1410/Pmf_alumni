@@ -10,7 +10,7 @@ import ImageCropper from "@/app/components/ImageCropper/ImageCropper";
 import { usePathname  } from "next/navigation";
 import Link from "next/link";
 
-function Sablon() {
+/* function Sablon() {
   const [modalProfileOpen, setModalProfileOpen] = useState(false);
   const [modalPictureOpen, setModalPictureOpen] = useState(false);
   const { open: openToast } = useContext(ToastContext);
@@ -65,7 +65,7 @@ function Sablon() {
       </Modal>
     </div>
   );
-}
+} */
 
 function BasicInfo({user}) {
   const [modalProfileOpen, setModalProfileOpen] = useState(false);
@@ -164,17 +164,9 @@ function BasicInfo({user}) {
 
 function PersonalInformation({user}) {
   const [modalProfileOpen, setModalProfileOpen] = useState(false);
-  const [modalPictureOpen, setModalPictureOpen] = useState(false);
   const { open: openToast } = useContext(ToastContext);
 
-  const avatarUrl = useRef(
-    "https://avatarfiles.alphacoders.com/161/161002.jpg",
-  );
-
-  const updateAvatar = (imgSrc) => {
-    avatarUrl.current = imgSrc;
-  };
-
+  
   const handleEditClick = () => {
     setModalProfileOpen(true);
   };
@@ -551,27 +543,27 @@ export default function Main() {
   const id = segments[segments.length - 1];
   const [tags, setTags] = useState([]);
   const [user, setUser] = useState([]);
-  const [loading, setLoading] = useState(true); // Dodato stanje za učitavanje
-  const [error, setError] = useState(null); // Dodato stanje za greške
+  const [loading, setLoading] = useState(true); 
+  const [error, setError] = useState(null); 
 
   useEffect(() => {
-    if (!id) return;  // Ako ID nije dostupan, ne izvršavaj dalje
+    if (!id) return;  
 
     async function fetchUserComplete() {
       try {
         const response = await axios.get(`http://localhost:8000/auth/user-info/${id}`, { withCredentials: true });
         setUser(response.data.korisnik);
         setTags(response.data.tags);
-        setLoading(false); // Postavljanje učitavanja na false kada su podaci učitani
+        setLoading(false); 
       } catch (error) {
         console.error("Error fetching user data:", error);
-        setError(error); // Postavljanje greške
-        setLoading(false); // Postavljanje učitavanja na false i u slučaju greške
+        setError(error); 
+        setLoading(false); 
       }
     }
 
     fetchUserComplete();
-  }, [id]);  // useEffect se izvršava kada se ID promijeni
+  }, [id]);  
 
   if (loading) {
     return (
@@ -590,7 +582,7 @@ export default function Main() {
   if (error) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <p>Došlo je do greške pri učitavanju podataka.</p> {/* Prikazivanje poruke o grešci */}
+        <p>Došlo je do greške pri učitavanju podataka.</p> 
       </div>
     );
   }

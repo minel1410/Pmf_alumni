@@ -386,7 +386,7 @@ const SignUp = () => {
         <p className="mt-3 text-blue-gray-500 lg:hidden">
           Već imate račun? <a href="#">Prijavite se.</a>
         </p>
-        <p className={regSuccess ? ("text-md text-green-500") : ("hidden")}>Uspjesno ste izvrsili registraciju. Molimo prijavite se</p>
+        <p className={regSuccess ? ("text-md text-green-500") : ("hidden")}>Uspjesno ste izvrsili registraciju.</p>
         <p className={existingUser ? "text-red-500" : "hidden"}>
           Korisnik sa tom email adresom vec postoji
         </p>

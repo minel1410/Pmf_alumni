@@ -21,7 +21,6 @@ const Layout = ({children}) => {
     };
     fetchUser();
   }, []);
-  console.log("USER LAYOUT", user)
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [sidebarOpen, setSidebarOpen] = useState(true);
 
@@ -67,6 +66,18 @@ const Layout = ({children}) => {
         };
     }, []);
 
+    async function logOut(){
+        try {
+            const response = await axios.delete("http://localhost:8000/auth/log_out", { withCredentials: true });
+            if (response.status === 200) {
+                window.location.href = '/auth'
+              console.log(response.data);
+            }
+          } catch (error) {
+    
+          }
+    }
+
     return (
         <>
             <nav className="fixed top-0 z-30 w-full bg-white border-b border-gray-200">
@@ -95,8 +106,8 @@ const Layout = ({children}) => {
                                     ></path>
                                 </svg>
                             </button>
-                            <a href="https://flowbite.com" className="flex ms-2 md:me-24">
-                                <img src="/logo/pmf_svg_blue.svg" className="h-8 me-3" alt="FlowBite Logo" />
+                            <a href="#" className="flex ms-2 md:me-24">
+                                <img src="/logo/pmf_svg_blue.svg" className="h-8 me-3" alt="PMF Logo" />
                                 <span className="self-center text-xl font-semibold md:text-2xl whitespace-nowrap">PMF Alumni</span>
                             </a>
                         </div>
@@ -129,7 +140,8 @@ const Layout = ({children}) => {
                                         </p>
                                     </div>
                                     <ul className="py-1" role="none">
-                                        <li>
+                                        <li
+                                        onClick={logOut}>
                                             <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sign out</a>
                                         </li>
                                     </ul>
@@ -158,7 +170,7 @@ const Layout = ({children}) => {
             
          </li>
          <li>
-            <a href="#" class="flex items-center p-2 text-gray-900 rounded-lg hover:text-white hover:bg-picton-blue-300 dark:hover:bg-gray-700 group">
+            <a href="/chat" class="flex items-center p-2 text-gray-900 rounded-lg hover:text-white hover:bg-picton-blue-300 dark:hover:bg-gray-700 group">
                
                <span class="flex-1 ms-3 whitespace-nowrap">Inbox</span>
                
@@ -176,7 +188,8 @@ const Layout = ({children}) => {
                <span class="flex-1 ms-3 whitespace-nowrap">Objave</span>
             </a>
          </li>
-         <li>
+         <li
+         onClick={logOut}>
             <a href="#" class="flex items-center p-2 text-gray-900 rounded-lg hover:text-white hover:bg-picton-blue-300 dark:hover:bg-gray-700 group">
                
                <span class="flex-1 ms-3 whitespace-nowrap">Log out</span>
