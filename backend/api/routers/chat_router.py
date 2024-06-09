@@ -1,6 +1,13 @@
-from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
+from fastapi import (
+    APIRouter,
+    Depends,
+    WebSocket,
+    WebSocketDisconnect,
+    HTTPException,
+    Query,
+)
 from sqlalchemy.orm import Session
-from sqlalchemy import select
+from sqlalchemy import select, text
 from datetime import datetime
 from typing import List
 from models import Message, ConnectionManager
@@ -75,3 +82,42 @@ async def post_message(message: MessageCreate, db: Session = Depends(get_db)):
 
     # Emit WebSocket message with the message data
     await manager.broadcast(json.dumps(message_data))
+
+
+from typing import List, Dict
+
+
+@router.get("/latest_chat", response_model=List[Dict])
+async def get_latest_chats(user_id: int = Query(...), db: Session = Depends(get_db)):
+    query = text(
+        """
+    SELECT 
+        p1.tekst_poruke,
+        p1.datum_slanja,
+        p1.posiljalac_id,
+        k.ime as primalac_ime,
+        k.prezime as primalac_prezime,
+        k.profilna_slika as primalac_slika
+    FROM poruke p1
+    LEFT JOIN poruke p2 ON (p1.primalac_id = p2.primalac_id AND p1.datum_slanja < p2.datum_slanja)
+    JOIN korisnik k ON k.id = p1.primalac_id 
+    WHERE p2.primalac_id IS NULL AND (p1.primalac_id = :user_id OR p1.posiljalac_id = :user_id);
+    """
+    )
+
+    results = db.execute(query, {"user_id": user_id}).mappings().all()
+
+    if not results:
+        raise HTTPException(status_code=404, detail="No messages found")
+
+    return [
+        {
+            "tekst_poruke": row["tekst_poruke"],
+            "datum_slanja": row["datum_slanja"],
+            "posiljalac_id": row["posiljalac_id"],
+            "primalac_ime": row["primalac_ime"],
+            "primalac_prezime": row["primalac_prezime"],
+            "primalac_slika": row["primalac_slika"],
+        }
+        for row in results
+    ]

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
+import FeatherIcon from 'feather-icons-react';
 
 const Layout = ({children}) => {
     
@@ -80,7 +81,7 @@ const Layout = ({children}) => {
 
     return (
         <>
-            <nav className="fixed top-0 z-30 w-full bg-white border-b border-gray-200">
+            <nav className="fixed top-0 z-30 w-full bg-charade-900 border-b border-gray-200">
                 <div className="px-3 py-3 lg:px-5 lg:pl-3">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center justify-start">
@@ -107,8 +108,8 @@ const Layout = ({children}) => {
                                 </svg>
                             </button>
                             <a href="#" className="flex ms-2 md:me-24">
-                                <img src="/logo/pmf_svg_blue.svg" className="h-8 me-3" alt="PMF Logo" />
-                                <span className="self-center text-xl font-semibold md:text-2xl whitespace-nowrap">PMF Alumni</span>
+                                <img src="/logo/pmf_svg.svg" className="h-8 me-3" alt="PMF Logo" />
+                                <span className="self-center text-xl font-semibold md:text-2xl whitespace-nowrap text-white">PMF Alumni</span>
                             </a>
                         </div>
                         <div className="flex items-center">
@@ -152,53 +153,68 @@ const Layout = ({children}) => {
                 </div>
             </nav>
 
-            <aside
-                ref={sidebarRef}
-                className={`bg-white h-screen fixed top-0 left-0 z-20 w-64 pt-20 transition-transform border-r border-gray-200 ${
-                    sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-                } md:translate-x-0`}
-            >
-                <div className="h-full px-3 pb-4 overflow-y-auto bg-white">
-                    <ul class="space-y-2 font-medium">
-         <li>
-            <a href="#" class="flex items-center p-2 text-gray-900 rounded-lg hover:text-white hover:bg-picton-blue-300 dark:hover:bg-gray-700 group">
-               
-               <span class="ms-3">Početna</span>
-            </a>
-         </li>
-         <li>
-            
-         </li>
-         <li>
-            <a href="/chat" class="flex items-center p-2 text-gray-900 rounded-lg hover:text-white hover:bg-picton-blue-300 dark:hover:bg-gray-700 group">
-               
-               <span class="flex-1 ms-3 whitespace-nowrap">Inbox</span>
-               
-            </a>
-         </li>
-         <li>
-            <a href="#" class="flex items-center p-2 text-gray-900 rounded-lg hover:text-white hover:bg-picton-blue-300 dark:hover:bg-gray-700 group">
-               
-               <span class="flex-1 ms-3 whitespace-nowrap">Poslovi</span>
-            </a>
-         </li>
-         <li>
-            <a href="#" class="flex items-center p-2 text-gray-900 rounded-lg hover:text-white hover:bg-picton-blue-300 dark:hover:bg-gray-700 group">
-               
-               <span class="flex-1 ms-3 whitespace-nowrap">Objave</span>
-            </a>
-         </li>
-         <li
-         onClick={logOut}>
-            <a href="#" class="flex items-center p-2 text-gray-900 rounded-lg hover:text-white hover:bg-picton-blue-300 dark:hover:bg-gray-700 group">
-               
-               <span class="flex-1 ms-3 whitespace-nowrap">Log out</span>
-            </a>
-         </li>
-         
-      </ul>
+        <aside
+            ref={sidebarRef}
+            className={`bg-charade-900 h-screen fixed top-0 left-0 z-20 w-64 pt-20 transition-transform border-gray-200 ${
+                sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+            } md:translate-x-0`}
+        >
+            <div className="h-full pb-4 overflow-y-auto bg-charade-900 ps-4">
+                <ul className="space-y-4 font-medium">
+                    <li className="mb-2">
+                    
+                    </li>
+                    <li>
+                        <a href="#" className="flex items-center gap-5 p-2 py-4 text-white hover:rounded-tl-[30px] hover:rounded-bl-[30px] hover:bg-white hover:text-charade-900 transition-all">
+                                                        <FeatherIcon icon="home" />
+
+                            <span className="ms-3">Početna</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/chat" className="flex items-center gap-5 p-2 py-4 text-white hover:rounded-tl-[30px] hover:rounded-bl-[30px] hover:bg-white hover:text-charade-900 transition-all">
+                                                        <FeatherIcon icon="inbox" />
+
+                            <span className="ms-3">Inbox</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" className="flex items-center gap-5 p-2 py-4 text-white hover:rounded-tl-[30px] hover:rounded-bl-[30px] hover:bg-white hover:text-charade-900 transition-all">
+                                                        <FeatherIcon icon="image" />
+
+                            <span className="ms-3">Objave</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" className="flex items-center gap-5 p-2 py-4 text-white hover:rounded-tl-[30px] hover:rounded-bl-[30px] hover:bg-white hover:text-charade-900 transition-all">
+                                                        <FeatherIcon icon="briefcase" />
+
+                            <span className="ms-3">Poslovi</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" className="flex items-center gap-5 p-2 py-4 text-white hover:rounded-tl-[30px] hover:rounded-bl-[30px] hover:bg-white hover:text-charade-900 transition-all">
+                                                        <FeatherIcon icon="user" />
+
+                            <span className="ms-3">Moj profil</span>
+                        </a>
+                    </li>
+                </ul>
+                <div className="absolute bottom-0 left-0 w-full py-2 ps-4 border-t">
+                    <ul className="space-y-4 font-medium">
+                        <li>
+                        <a href="#" className="flex items-center gap-5 p-2 py-4 text-white hover:rounded-tl-[30px] hover:rounded-bl-[30px] hover:bg-white hover:text-charade-900 transition-all">
+                                                        <FeatherIcon icon="log-out" />
+
+                            <span className="ms-3">Log out</span>
+                        </a>
+                    </li>
+                    </ul>
                 </div>
-            </aside>
+            </div>
+        </aside>
+
+
             <div class="p-4 md:ml-64 h-full">
    <div class="p-4 mt-14">
     {children}
