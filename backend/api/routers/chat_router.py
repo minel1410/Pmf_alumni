@@ -6,6 +6,7 @@ from typing import List
 from models import Message, ConnectionManager
 from schemas import MessageCreate, MessageResponse
 from database import get_db
+import json
 
 router = APIRouter()
 manager = ConnectionManager()
@@ -63,6 +64,14 @@ async def post_message(message: MessageCreate, db: Session = Depends(get_db)):
     db.add(new_message)
     db.commit()
     db.refresh(new_message)
-    await manager.broadcast(
-        f"New message from {message.posiljalac_id}: {message.tekst_poruke}"
-    )
+
+    message_data = {
+        "type": "new_message",
+        "message": message.tekst_poruke,
+        "sender_id": message.posiljalac_id,
+        "receiver_id": message.primalac_id,
+        "sent_at": new_message.datum_slanja.isoformat(),  # Add the sent at timestamp in ISO format
+    }
+
+    # Emit WebSocket message with the message data
+    await manager.broadcast(json.dumps(message_data))

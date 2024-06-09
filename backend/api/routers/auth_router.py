@@ -77,7 +77,7 @@ async def register_user(
     db.add(new_course_user)
     db.commit()
 
-    token_expires = timedelta(days=30)  
+    token_expires = timedelta(days=30)
     token = authentication.create_access_token(
         {"user_id": new_user.id},
         expires_delta=token_expires,
@@ -326,6 +326,7 @@ async def get_user_info(id: int, db: Session = Depends(get_db)):
 
     return {"korisnik": korisnik_info, "tags": tags}
 
+
 @router.delete("/log_out")
 async def log_out(request: Request, response: Response, db: Session = Depends(get_db)):
     cookie = request.cookies.get("access_token")
@@ -335,5 +336,5 @@ async def log_out(request: Request, response: Response, db: Session = Depends(ge
         )
 
     response.delete_cookie("access_token")
-    
+
     return {"detail": "Successfully logged out"}

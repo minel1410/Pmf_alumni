@@ -10,6 +10,7 @@ export default function Main() {
   const [user, setUser] = useState({});
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(true); // Dodano stanje za praćenje učitavanja
   const pathname = usePathname();
   const segments = pathname.split("/");
   const id = segments[segments.length - 1];
@@ -31,43 +32,74 @@ export default function Main() {
   }, []);
 
   useEffect(() => {
-    const fetchMessages = async () => {
-      try {
-        const response = await axios.get("http://localhost:8000/chat/messages", {
-          params: { id1: id, id2: 62 }
-        });
-        if (response.status === 200) {
-          setMessages(response.data);
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    fetchMessages();
-  }, [id, user]);
-
-  useEffect(() => {
     if (user.id) {
+      // Dohvati stare poruke iz baze
+      const fetchMessages = async () => {
+        try {
+          const response = await axios.get(`http://localhost:8000/chat/messages?id1=${user.id}&id2=${id}`);
+          setMessages(response.data);
+        } catch (error) {
+          console.error("Error fetching messages:", error);
+        } finally {
+          setIsLoading(false); // Postavi isLoading na false nakon učitavanja
+        }
+      };
+      fetchMessages();
+
       const ws = new WebSocket(`ws://localhost:8000/chat/ws/${user.id}`);
       ws.onmessage = (event) => {
         const message = JSON.parse(event.data);
-        setMessages((prevMessages) => [...prevMessages, message]);
+        if (message.type === "new_message") {
+          const receivedMessage = {
+            tekst_poruke: message.message,
+            posiljalac_id: message.sender_id,
+            primalac_id: message.receiver_id,
+            datum_prijema: new Date().toISOString(),
+          };
+          setMessages((prevMessages) => [...prevMessages, receivedMessage]);
+        }
       };
       setSocket(ws);
       return () => ws.close();
     }
   }, [user.id]);
 
+  const formatMessageTime = (timestamp) => {
+    const messageDate = new Date(timestamp);
+    const currentDate = new Date();
+
+    if (
+      messageDate.getDate() === currentDate.getDate() &&
+      messageDate.getMonth() === currentDate.getMonth() &&
+      messageDate.getFullYear() === currentDate.getFullYear()
+    ) {
+      // Poruka je poslana danas, samo prikažemo vrijeme
+      const hours = messageDate.getHours().toString().padStart(2, '0'); // 24-satni format
+      const minutes = messageDate.getMinutes().toString().padStart(2, '0'); // Pad minutes with leading zero if necessary
+      return `${hours}:${minutes}`;
+    } else {
+      // Poruka nije poslana danas, prikažemo datum i vrijeme
+      const day = messageDate.getDate().toString().padStart(2, '0'); // Pad day with leading zero if necessary
+      const month = (messageDate.getMonth() + 1).toString().padStart(2, '0'); // Pad month with leading zero if necessary
+      const year = messageDate.getFullYear();
+      const hours = messageDate.getHours().toString().padStart(2, '0'); // 24-satni format
+      const minutes = messageDate.getMinutes().toString().padStart(2, '0'); // Pad minutes with leading zero if necessary
+      return `${day}.${month}.${year}. ${hours}:${minutes}`;
+    }
+  };
+
   const handleSendMessage = async () => {
+    console.log("Sending message...");
     try {
       await axios.post("http://localhost:8000/chat/messages", {
-        posiljalac_id: 62,
-        primalac_id: 61,
+        posiljalac_id: user.id,
+        primalac_id: id,
         tekst_poruke: newMessage,
       });
+      console.log("Message sent successfully.");
       setNewMessage("");
     } catch (error) {
-      console.error(error);
+      console.error("Error sending message:", error);
     }
   };
 
@@ -94,17 +126,26 @@ export default function Main() {
           </div>
         </div>
         <div className="bg-white p-8 flex flex-col gap-3 overflow-y-scroll overflow-x-clip h-[75vh]">
-          {messages.map((message, index) => (
-            <ChatBubble
-              key={index}
-              viewer={user["id"]}
-              sender={message.posiljalac_id}
-              receiver={message.primalac_id}
-              name="Minel Salihagic"
-              content={message.tekst_poruke}
-              time={message.datum_slanja}
-            />
-          ))}
+          {isLoading ? (
+            <div role="status" className="w-full h-full items-center justify-center">
+    <svg aria-hidden="true" className="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
+        <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
+    </svg>
+</div>
+          ) : (
+            messages.map((message, index) => (
+              <ChatBubble
+                key={index}
+                viewer={user.id}
+                sender={message.posiljalac_id}
+                receiver={message.primalac_id}
+                name="Minel Salihagic"
+                content={message.tekst_poruke}
+                time={formatMessageTime(message.datum_slanja)}
+              />
+            ))
+          )}
         </div>
         <div className="w-full p-3">
           <div className="relative flex">
