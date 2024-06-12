@@ -6,78 +6,83 @@ import FeatherIcon from 'feather-icons-react';
 
 const Layout = ({children}) => {
     
-    const [user, setUser] = useState({});
+   const [user, setUser] = useState({});
+  const [avatarUrl, setAvatarUrl] = useState("/avatar/no-avatar.svg");
 
-   useEffect(() => {
+  useEffect(() => {
     const fetchUser = async () => {
       try {
         const response = await axios.get("http://localhost:8000/auth/get_cookies", { withCredentials: true });
         if (response.status === 200) {
-            setUser(response.data)
+          setUser(response.data);
+          if (response.data.profilna_slika) {
+            setAvatarUrl(`http://localhost:8000/files/images/profile/${response.data.profilna_slika}`);
+          }
           console.log(response.data);
         }
       } catch (error) {
-
+        console.error("Failed to fetch user", error);
       }
     };
     fetchUser();
   }, []);
-    const [dropdownOpen, setDropdownOpen] = useState(false);
-    const [sidebarOpen, setSidebarOpen] = useState(true);
 
-    const dropdownRef = useRef(null);
-    const sidebarRef = useRef(null);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
-    const toggleDropdown = () => {
-        setDropdownOpen(!dropdownOpen);
-    };
+  const dropdownRef = useRef(null);
+  const sidebarRef = useRef(null);
 
-    const handleClickOutside = (event) => {
-        if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-            setDropdownOpen(false);
-        }
-        if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
-            setSidebarOpen(false);
-        }
-    };
+  const toggleDropdown = () => {
+    setDropdownOpen(!dropdownOpen);
+  };
 
-    const toggleSidebar = () => {
-        setSidebarOpen(!sidebarOpen);
-    };
-
-    useEffect(() => {
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, []);
-
-    useEffect(() => {
-        const handleResize = () => {
-            if (window.innerWidth < 768) {
-                setSidebarOpen(false);
-            } else {
-                setSidebarOpen(true);
-            }
-        };
-        window.addEventListener('resize', handleResize);
-        handleResize(); 
-        return () => {
-            window.removeEventListener('resize', handleResize);
-        };
-    }, []);
-
-    async function logOut(){
-        try {
-            const response = await axios.delete("http://localhost:8000/auth/log_out", { withCredentials: true });
-            if (response.status === 200) {
-                window.location.href = '/auth'
-              console.log(response.data);
-            }
-          } catch (error) {
-    
-          }
+  const handleClickOutside = (event) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      setDropdownOpen(false);
     }
+    if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
+      setSidebarOpen(false);
+    }
+  };
+
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768) {
+        setSidebarOpen(false);
+      } else {
+        setSidebarOpen(true);
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    handleResize();
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
+  async function logOut() {
+    try {
+      const response = await axios.delete("http://localhost:8000/auth/log_out", { withCredentials: true });
+      if (response.status === 200) {
+        window.location.href = '/auth';
+        console.log(response.data);
+      }
+    } catch (error) {
+      console.error("Failed to log out", error);
+    }
+  }
 
     return (
         <>
@@ -123,7 +128,7 @@ const Layout = ({children}) => {
                                         <span className="sr-only">Open user menu</span>
                                         <img
                                             className="w-8 h-8 rounded-full"
-                                            src="/logo/pmf_svg.svg"
+                                            src={avatarUrl}
                                             alt="user photo"
                                         />
                                     </button>
@@ -224,4 +229,4 @@ const Layout = ({children}) => {
     );
 };
 
-export default Layout;
+export default React.memo(Layout);

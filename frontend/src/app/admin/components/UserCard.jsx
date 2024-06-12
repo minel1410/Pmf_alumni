@@ -72,7 +72,7 @@ const UserCard = ({ userParam }) => {
               <p className="text-gray-700 font-medium">Verifikacija</p>
               <div className="flex items-center gap-2">
                 <a
-                  href={`http://localhost:8000/files/images/${user.diploma_picture}`}
+                  href={`http://localhost:8000/files/images/diploma/${user.diploma_picture}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="px-6 py-2 border-2 border-picton-blue-500 rounded-md"

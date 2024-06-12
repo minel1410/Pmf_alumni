@@ -9,6 +9,7 @@ import ToastProvider from "@/app/components/Toast/ToastProvider";
 import ImageCropper from "@/app/components/ImageCropper/ImageCropper";
 import { usePathname  } from "next/navigation";
 import Link from "next/link";
+import Input from "@/app/components/Input";
 
 /* function Sablon() {
   const [modalProfileOpen, setModalProfileOpen] = useState(false);
@@ -67,14 +68,12 @@ import Link from "next/link";
   );
 } */
 
-function BasicInfo({user}) {
+
+const BasicInfo = ({ user, owner }) => {
   const [modalProfileOpen, setModalProfileOpen] = useState(false);
   const [modalPictureOpen, setModalPictureOpen] = useState(false);
   const { open: openToast } = useContext(ToastContext);
 
-  const avatarUrl = useRef(
-    "/avatar/no-avatar.svg"
-  );
 
   const updateAvatar = (imgSrc) => {
     avatarUrl.current = imgSrc;
@@ -104,45 +103,49 @@ function BasicInfo({user}) {
       <div className="flex gap-2 items-center">
         <div className="relative">
           <img
-            src={user["profilna_slika"] ? "/avatar/no-avatar.svg" : "/logo/pmf_svg_blue.svg"}
+            src={`http://localhost:8000/files/images/profile/id/${user.id}`}
             className="w-20 h-20 rounded-full"
             alt="Profile"
           />
-          <button
+          {owner && <button
             className="absolute -bottom-2 left-0 right-0 m-auto w-fit p-1 rounded-full opacity-75 bg-gray-800 hover:opacity-100 border border-gray-600 transition-all"
             title="Change photo"
             onClick={() => setModalPictureOpen(true)}
           >
             <FeatherIcon icon="edit-2" className="w-4 h-4 text-white" />
-          </button>
+          </button>}
         </div>
         <div>
-          <p className="font-bold text-md">{user["ime"] + " " + user["prezime"]}</p>
-          <p className="text-gray-400">{user["zanimanje"] ? user["zanimanje"] : user["email"]}</p>
-          <p className="text-gray-400">{user["mjesto_stanovanja"]}</p>
+          <p className="font-bold text-md">{user.ime + " " + user.prezime}</p>
+          <p className="text-gray-400">{user.zanimanje ? user.zanimanje : user.email}</p>
+          <p className="text-gray-400">{user.mjesto_stanovanja}</p>
         </div>
       </div>
-      <div
+      {owner && <div
         onClick={handleEditClick}
         className="px-4 py-1 border-2 border-gray-300 rounded-md flex items-start gap-2 cursor-pointer hover:bg-gray-100 transition-colors"
       >
         <FeatherIcon icon="edit" className="w-5 h-5 p-0 text-gray-800" />
         <p className="text-gray-800">Edit</p>
-      </div>
+      </div>}
 
       <Modal open={modalPictureOpen} onClose={() => setModalPictureOpen(false)}>
         <div className="w-[80vw] min-h-[60vh]">
           <ImageCropper
             closeModal={() => setModalPictureOpen(false)}
             updateAvatar={updateAvatar}
+            userId={user.id}
           />
-          <button className="p-5 w-full text-white bg-picton-blue-500 mt-5 rounded-md hover:opacity-75 transition-all">
-            PROMIJENI SLIKU
-          </button>
         </div>
       </Modal>
 
       <Modal open={modalProfileOpen} onClose={() => setModalProfileOpen(false)}>
+        <div className="flex flex-col gap-3">
+            <p className="text-2xl font-bold">Podaci o korisniku</p>
+            <div>
+              <Input></Input>
+            </div>
+        </div>
         <div className="flex justify-around gap-4">
           <button
             onClick={handleDeleteClick}
@@ -160,9 +163,11 @@ function BasicInfo({user}) {
       </Modal>
     </div>
   );
-}
+};
 
-function PersonalInformation({user}) {
+
+export { ImageCropper };
+function PersonalInformation({user, owner}) {
   const [modalProfileOpen, setModalProfileOpen] = useState(false);
   const { open: openToast } = useContext(ToastContext);
 
@@ -190,13 +195,13 @@ function PersonalInformation({user}) {
     <div className="border-2 border-gray-200 rounded-lg p-4">
       <div className="flex w-full justify-between">
         <p className="text-xl font-semibold">Lične informacije</p>
-        <div
+        {owner && <div
           onClick={handleEditClick}
           className="px-4 py-1 border-2 border-gray-300 rounded-md flex items-start gap-2 cursor-pointer hover:bg-gray-100 transition-colors"
         >
           <FeatherIcon icon="edit" className="w-5 h-5 p-0 text-gray-800" />
           <p className="text-gray-800">Edit</p>
-        </div>
+        </div>}
       </div>
 
 
@@ -242,7 +247,7 @@ function PersonalInformation({user}) {
   );
 }
 
-function Password() {
+function Password({user, owner}) {
   const [modalProfileOpen, setModalProfileOpen] = useState(false);
   const [modalPictureOpen, setModalPictureOpen] = useState(false);
   const { open: openToast } = useContext(ToastContext);
@@ -271,13 +276,13 @@ function Password() {
     <div className="border-2 border-gray-200 rounded-lg p-4">
       <div className="flex w-full justify-between">
         <p className="text-xl font-semibold">Password</p>
-        <div
+        {owner && <div
           onClick={handleEditClick}
           className="px-4 py-1 border-2 border-gray-300 rounded-md flex items-start gap-2 cursor-pointer hover:bg-gray-100 transition-colors"
         >
           <FeatherIcon icon="edit" className="w-5 h-5 p-0 text-gray-800" />
           <p className="text-gray-800">Edit</p>
-        </div>
+        </div>}
       </div>
 
       <Modal open={modalProfileOpen} onClose={() => setModalProfileOpen(false)}>
@@ -300,7 +305,7 @@ function Password() {
   );
 }
 
-function AcademicInfo({user}) {
+function AcademicInfo({user, owner}) {
   const [modalProfileOpen, setModalProfileOpen] = useState(false);
   const [modalPictureOpen, setModalPictureOpen] = useState(false);
   const { open: openToast } = useContext(ToastContext);
@@ -332,13 +337,13 @@ const formatiranDatum = `${godinaDiplomiranja.getDate()}.${godinaDiplomiranja.ge
     <div className="border-2 border-gray-200 rounded-lg p-4">
       <div className="flex w-full justify-between">
         <p className="text-xl font-semibold">Akademske informacije</p>
-        <div
+        {owner && <div
           onClick={handleEditClick}
           className="px-4 py-1 border-2 border-gray-300 rounded-md flex items-start gap-2 cursor-pointer hover:bg-gray-100 transition-colors"
         >
           <FeatherIcon icon="edit" className="w-5 h-5 p-0 text-gray-800" />
           <p className="text-gray-800">Edit</p>
-        </div>
+        </div>}
       </div>
 
       <Modal open={modalProfileOpen} onClose={() => setModalProfileOpen(false)}>
@@ -386,7 +391,7 @@ const formatiranDatum = `${godinaDiplomiranja.getDate()}.${godinaDiplomiranja.ge
   );
 }
 
-function ProfessionalInfo({user}) {
+function ProfessionalInfo({user, owner}) {
   const [modalProfileOpen, setModalProfileOpen] = useState(false);
   const [modalPictureOpen, setModalPictureOpen] = useState(false);
   const { open: openToast } = useContext(ToastContext);
@@ -414,13 +419,13 @@ function ProfessionalInfo({user}) {
     <div className="border-2 border-gray-200 rounded-lg p-4">
       <div className="flex w-full justify-between">
         <p className="text-xl font-semibold">Informacije o zaposlenju</p>
-        <div
+        {owner && <div
           onClick={handleEditClick}
           className="px-4 py-1 border-2 border-gray-300 rounded-md flex items-start gap-2 cursor-pointer hover:bg-gray-100 transition-colors"
         >
           <FeatherIcon icon="edit" className="w-5 h-5 p-0 text-gray-800" />
           <p className="text-gray-800">Edit</p>
-        </div>
+        </div>}
       </div>
 
       <Modal open={modalProfileOpen} onClose={() => setModalProfileOpen(false)}>
@@ -464,7 +469,7 @@ function ProfessionalInfo({user}) {
   );
 }
 
-function Tags({tags}) {
+function Tags({tags, owner}) {
   const [modalProfileOpen, setModalProfileOpen] = useState(false);
   const [modalPictureOpen, setModalPictureOpen] = useState(false);
   const { open: openToast } = useContext(ToastContext);
@@ -492,13 +497,13 @@ function Tags({tags}) {
     <div className="border-2 border-gray-200 rounded-lg p-4">
       <div className="flex w-full justify-between">
         <p className="text-xl font-semibold">Interesi</p>
-        <div
+        {owner && <div
           onClick={handleEditClick}
           className="px-4 py-1 border-2 border-gray-300 rounded-md flex items-start gap-2 cursor-pointer hover:bg-gray-100 transition-colors"
         >
           <FeatherIcon icon="edit" className="w-5 h-5 p-0 text-gray-800" />
           <p className="text-gray-800">Edit</p>
-        </div>
+        </div>}
       </div>
 
       <Modal open={modalProfileOpen} onClose={() => setModalProfileOpen(false)}>
@@ -542,9 +547,25 @@ export default function Main() {
   const segments = pathname.split('/');
   const id = segments[segments.length - 1];
   const [tags, setTags] = useState([]);
-  const [user, setUser] = useState([]);
+  const [user, setUser] = useState({});
+  const [viewer, setViewer] = useState({});
   const [loading, setLoading] = useState(true); 
   const [error, setError] = useState(null); 
+  const [owner, setOwner] = useState(false)
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await axios.get("http://localhost:8000/auth/get_cookies", { withCredentials: true });
+        if (response.status === 200) {
+          setViewer(response.data);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchUser();
+  }, []);
 
   useEffect(() => {
     if (!id) return;  
@@ -554,6 +575,7 @@ export default function Main() {
         const response = await axios.get(`http://localhost:8000/auth/user-info/${id}`, { withCredentials: true });
         setUser(response.data.korisnik);
         setTags(response.data.tags);
+        setOwner(response.data.korisnik.id === viewer.id);
         setLoading(false); 
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -563,18 +585,18 @@ export default function Main() {
     }
 
     fetchUserComplete();
-  }, [id]);  
+  }, [id, viewer]);  
 
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
-  <div role="status">
-    <svg ariaHidden="true" className="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
-        <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
-    </svg>
-    <span class="sr-only">Loading...</span>
-</div>
+        <div role="status">
+          <svg aria-hidden="true" className="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
+            <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
+          </svg>
+          <span className="sr-only">Loading...</span>
+        </div>
       </div>
     );
   }
@@ -591,14 +613,16 @@ export default function Main() {
     <ToastProvider>
       <div className="flex flex-col gap-3 w-full">
         <p className="text-3xl font-bold">Moj profil</p>
-        <BasicInfo user={user} /> 
-        <Password user={user} /> 
-        <PersonalInformation user={user} /> 
+        <BasicInfo user={user} owner={owner}/> 
+        <Password user={user} owner={owner} /> 
+        <PersonalInformation user={user} owner={owner} /> 
         <AcademicInfo user={user} /> 
-        <ProfessionalInfo user={user} /> 
-        <Tags tags={tags} /> 
+        <ProfessionalInfo user={user} owner={owner} /> 
+        <Tags tags={tags} owner={owner} /> 
       </div>
     </ToastProvider>
   );
 }
+
+
 

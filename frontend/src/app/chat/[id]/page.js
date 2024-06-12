@@ -6,6 +6,7 @@ import FeatherIcon from "feather-icons-react";
 import ToastProvider from "@/app/components/Toast/ToastProvider";
 import ChatBubble from "../components/ChatBubble";
 
+
 export default function Main() {
   const [user, setUser] = useState({});
   const [messages, setMessages] = useState([]);
@@ -108,13 +109,11 @@ export default function Main() {
       <div className="w-full rounded-lg overflow-hidden">
         <div className="px-4 py-2 bg-picton-blue-500 flex items-center justify-between">
           <div className="flex gap-3 items-center">
-            <div className="relative">
-              <span className="absolute text-green-500 right-0 bottom-0">
-                <svg width="20" height="20">
-                  <circle cx="8" cy="8" r="8" fill="currentColor"></circle>
-                </svg>
-              </span>
-              <img src="https://images.unsplash.com/photo-1549078642-b2ba4bda0cdb?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=facearea&amp;facepad=3&amp;w=144&amp;h=144" alt="" className="w-16 h-16 rounded-full" />
+            <div className="">
+              <img 
+              src={`http://localhost:8000/files/images/profile/id/${id}`}
+              alt="" 
+              className="w-16 h-16 rounded-full" />
             </div>
             <div className="flex flex-col">
               <p className="text-white font-md">Minel Salihagić</p>
@@ -125,7 +124,7 @@ export default function Main() {
             <FeatherIcon icon="trash-2" className="w-8 h-8 text-white"></FeatherIcon>
           </div>
         </div>
-        <div className="bg-white p-8 flex flex-col gap-3 overflow-y-scroll overflow-x-clip h-[75vh]">
+        <div className="bg-white p-8 flex flex-col gap-3 overflow-y-scroll overflow-x-clip h-[70vh]">
           {isLoading ? (
             <div role="status" className="w-full h-full items-center justify-center">
     <svg aria-hidden="true" className="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">

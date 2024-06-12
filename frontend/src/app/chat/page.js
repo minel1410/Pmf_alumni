@@ -1,7 +1,7 @@
-"use client";
-
+"use client"
 import { useState, useEffect } from "react";
 import axios from "axios";
+import Link from "next/link";
 
 const formatDate = (dateString) => {
   const date = new Date(dateString);
@@ -22,14 +22,16 @@ const formatDate = (dateString) => {
   }
 };
 
-const UserChat = ({ latest_message, user_id }) => {
+const UserChat = ({ latest_message, user_id, user_picture }) => {
     const formattedDate = formatDate(latest_message.datum_slanja);
-
     return (
-        <div className="w-full p-4 border shadow-md rounded-lg flex gap-5 hover:cursor-pointer">
-            <div className="w-16 h-16 rounded-full bg-red-300">
-                {/* Možete dodati sliku korisnika ovdje */}
-            </div>
+        <Link href={user_id === latest_message.primalac_id ? `/chat/${latest_message.posiljalac_id}` : `/chat/${latest_message.primalac_id}`} className="w-full p-4 border shadow-md rounded-lg flex gap-5 hover:cursor-pointer">
+
+                <img
+                src={`http://localhost:8000/files/images/profile/${user_picture || ''}`}
+                alt="user photo"
+                className="w-16 h-16 rounded-full"
+                />
             <div className="flex flex-col justify-around w-full">
                 <div className="w-full flex justify-between items-center">
                     <p className="font-bold">{latest_message.primalac_ime + " " + latest_message.primalac_prezime}</p>
@@ -43,7 +45,7 @@ const UserChat = ({ latest_message, user_id }) => {
                     )}
                 </div>
             </div>
-        </div>
+        </Link>
     );
 };
 
@@ -87,7 +89,7 @@ export default function C() {
         <div>
             <div className="flex flex-col gap-3">
                 {chats.map((chat, index) => (
-                    <UserChat key={index} latest_message={chat} user_id={user.id} />
+                    <UserChat key={index} latest_message={chat} user_id={user.id} user_picture={chat.primalac_slika} primalac_id={user.primalac_id} posiljalac_id={user.posiljalac_id} />
                 ))}
             </div>
         </div>

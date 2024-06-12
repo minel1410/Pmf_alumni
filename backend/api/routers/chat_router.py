@@ -95,6 +95,7 @@ async def get_latest_chats(user_id: int = Query(...), db: Session = Depends(get_
         p1.tekst_poruke,
         p1.datum_slanja,
         p1.posiljalac_id,
+        p1.primalac_id,
         k.ime as primalac_ime,
         k.prezime as primalac_prezime,
         k.profilna_slika as primalac_slika
@@ -115,6 +116,7 @@ async def get_latest_chats(user_id: int = Query(...), db: Session = Depends(get_
             "tekst_poruke": row["tekst_poruke"],
             "datum_slanja": row["datum_slanja"],
             "posiljalac_id": row["posiljalac_id"],
+            "primalac_id": row["primalac_id"],
             "primalac_ime": row["primalac_ime"],
             "primalac_prezime": row["primalac_prezime"],
             "primalac_slika": row["primalac_slika"],
