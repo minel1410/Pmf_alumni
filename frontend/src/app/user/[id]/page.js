@@ -74,6 +74,22 @@ const BasicInfo = ({ user, owner }) => {
   const [modalPictureOpen, setModalPictureOpen] = useState(false);
   const { open: openToast } = useContext(ToastContext);
 
+  const [formData, setFormData] = useState({
+  ime: user.ime,
+  prezime: user.prezime,
+  zanimanje: user.zanimanje,
+  mjesto_stanovanja: user.mjesto_stanovanja,
+});
+
+const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    const newValue = type === "checkbox" ? checked : value;
+    setFormData((prevState) => ({
+      ...prevState,
+      [name]: newValue,
+    }));
+  };
+
 
   const updateAvatar = (imgSrc) => {
     avatarUrl.current = imgSrc;
@@ -85,15 +101,19 @@ const BasicInfo = ({ user, owner }) => {
 
   const handleDeleteClick = () => {
     openToast(
-      <div className="flex gap-4 pe-5">
-        <div>
-          <h1>OK</h1>
-          <p className="text-gray-600">Uspješno ste sačuvali promjene</p>
-        </div>
-        <button className="mx-3 bg-gray-200 p-3 border border-black rounded-lg">
-          Undo
-        </button>
-      </div>,
+    
+    <div class="flex p-4">
+      <div class="flex-shrink-0">
+        <svg class="flex-shrink-0 size-4 text-red-500 mt-0.5" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"></path>
+        </svg>
+      </div>
+      <div class="ms-3">
+        <p class="text-sm text-gray-700 dark:text-neutral-400">
+          Uspjesno ste ažurirali podatke
+        </p>
+      </div>
+    </div>
     );
     setModalProfileOpen(false);
   };
@@ -140,18 +160,46 @@ const BasicInfo = ({ user, owner }) => {
       </Modal>
 
       <Modal open={modalProfileOpen} onClose={() => setModalProfileOpen(false)}>
-        <div className="flex flex-col gap-3">
-            <p className="text-2xl font-bold">Podaci o korisniku</p>
-            <div>
-              <Input></Input>
+        <div className="flex flex-col gap-3 p-5">
+            <p className="text-3xl font-bold">Podaci o korisniku</p>
+            <div className="flex flex-col gap-2">
+              <Input
+              label="Ime"
+              value={formData.ime}
+              onChange={(e) => {
+                setFormData((prevState) => ({...prevState, ime: e.target.value }));
+              }}
+            />
+
+            <Input
+              label="Prezime"
+              value={formData.prezime}
+              onChange={(e) => {
+                setFormData((prevState) => ({...prevState, prezime: e.target.value }));
+              }}
+            />
+            <Input
+              label="Zanimanje"
+              value={formData.zanimanje}
+              onChange={(e) => {
+                setFormData((prevState) => ({...prevState, zanimanje: e.target.value }));
+              }}
+            />
+            <Input
+              label="Mjesto stanovanja"
+              value={formData.mjesto_stanovanja}
+              onChange={(e) => {
+                setFormData((prevState) => ({...prevState, mjesto_stanovanja: e.target.value }));
+              }}
+            />
             </div>
         </div>
-        <div className="flex justify-around gap-4">
+        <div className="flex justify-around gap-4 px-5">
           <button
             onClick={handleDeleteClick}
-            className="bg-red-500 p-3 rounded-lg text-white w-full"
+            className="bg-picton-blue-500 p-3 rounded-lg text-white w-full hover:opacity-75 transition-all"
           >
-            Delete
+            Ažuriraj
           </button>
           <button
             className="bg-white border-2 border-black p-3 rounded-lg text-black w-full"
@@ -236,7 +284,8 @@ function PersonalInformation({user, owner}) {
           </button>
           <button
             className="bg-white border-2 border-black p-3 rounded-lg text-black w-full"
-            onClick={() => setModalProfileOpen(false)}
+            onClick={() => 
+              setModalProfileOpen(false)}
           >
             Cancel
           </button>
