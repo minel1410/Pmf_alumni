@@ -1,4 +1,5 @@
 from pydantic import BaseModel, HttpUrl
+from datetime import datetime,date
 from typing import Optional
 
 
@@ -56,3 +57,23 @@ class RegisterSchema(BaseModel):
     user: UserSchema
     course: CourseSchema
     department: DepartmentSchema
+
+
+class EventTypeSchema(BaseModel): 
+    event_type_name: str
+
+
+class EventSchema(BaseModel):
+    event_name: str
+    event_description: Optional[str] = None
+    street: Optional[str]= None
+    city: Optional[str]= None
+    event_type_id: int
+    user_id: int
+    event_date: datetime
+    event_image: Optional[str] = None
+
+
+class EventTagSchema(BaseModel):
+    tag_id: int
+    event_id: int

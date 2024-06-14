@@ -90,3 +90,30 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     username: Union[str, None] = None
+
+
+class EventType(Base):
+    __tablename__="tip_dogadjaja"
+
+    tip_dogadjaja_id=Column(Integer,primary_key=True,autoincrement=True,nullable=False)
+    naziv_tipa_dogadjaja=Column(String,nullable=False)
+
+class Event(Base):
+    __tablename__="dogadjaj"
+
+    dogadjaj_id=Column(Integer, primary_key=True, autoincrement=True,nullable=False)
+    naziv_dogadjaja=Column(String,nullable=False)
+    opis_dogadjaja=Column(Text,nullable=True)
+    ulica=Column(String,nullable=True)
+    grad=Column(String,nullable=True)
+    tip_dogadjaja_id=Column(Integer,ForeignKey("tip_dogadjaja.tip_dogadjaja_id"), nullable=False)
+    korisnik_id=Column(Integer,ForeignKey("korisnik.id"),nullable=False)
+    datum_dogadjaja=Column(Date, nullable=False)
+    dogadjaj_slika=Column(String,nullable=True)
+
+class EventTag(Base):
+    __tablename__="tag_dogadjaj"
+
+    tag_dogadjaja_id = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+    tag_id = Column(Integer, ForeignKey("tag.tag_id"), nullable=False) 
+    dogadjaj_id = Column(Integer, ForeignKey("dogadjaj.dogadjaj_id"),nullable=False)
