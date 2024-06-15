@@ -7,6 +7,10 @@ import Modal from "../components/Modal";
 import Loader from "../components/Loader";
 
 const formatDate = (dateString) => {
+
+
+
+
   const date = new Date(dateString);
   const today = new Date();
   
@@ -26,6 +30,11 @@ const formatDate = (dateString) => {
 };
 
 const UserChat = ({ latest_message, user_id, user_picture }) => {
+
+  
+
+
+
     const formattedDate = formatDate(latest_message.datum_slanja);
     return (
         <Link href={user_id === latest_message.primalac_id ? `/chat/${latest_message.posiljalac_id}` : `/chat/${latest_message.primalac_id}`} className="w-full p-4 border shadow-md rounded-lg flex gap-5 hover:cursor-pointer">
@@ -66,6 +75,7 @@ export default function C() {
         if (response.status === 200) {
           setUser(response.data);
           console.log("EVO USER: ", response.data);
+        } else{
         }
       } catch (error) {
         console.error(error);

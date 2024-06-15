@@ -3,11 +3,29 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import UserCard from "./components/UserCard";
 import FeatherIcon from "feather-icons-react";
+import Modal from "../components/Modal";
 
 export default function C() {
     const [users, setUsers] = useState([]);
+    const [user, setUser] = useState({});
     const [loading, setLoading] = useState(true); // State to manage loading state
     const [searchQuery, setSearchQuery] = useState("");
+
+    useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await axios.get("http://localhost:8000/auth/get_cookies", { withCredentials: true });
+        if (response.status === 200) {
+          setUser(response.data);
+          console.log(user)
+
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchUser();
+  }, []);
 
     useEffect(() => {
         const fetchUsers = async () => {

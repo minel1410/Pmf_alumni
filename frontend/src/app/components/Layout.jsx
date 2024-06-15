@@ -19,9 +19,13 @@ const Layout = ({children}) => {
             setAvatarUrl(`http://localhost:8000/files/images/profile/${response.data.profilna_slika}`);
           }
           console.log(response.data);
+        } else {
+          window.location.href = '/auth'
         }
       } catch (error) {
         console.error("Failed to fetch user", error);
+        window.location.href = '/auth'
+        
       }
     };
     fetchUser();

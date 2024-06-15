@@ -514,50 +514,56 @@ function ProfessionalInfo({user, owner}) {
       </div>
 
       <Modal open={modalProfileOpen} onClose={() => setModalProfileOpen(false)}>
-        <div className="flex flex-col gap-3 p-5">
-            <p className="text-3xl font-bold">Promjena passworda</p>
-            <div className="flex flex-col gap-2">
-              
+  <div className="flex flex-col gap-3 p-5">
+    <p className="text-3xl font-bold">Promjena passworda</p>
+    <div className="flex flex-col gap-2">
 
-            
-            <Input
-              label="Zanimanje"
-              type="text"
-              name="zanimanje"
-              value={formData.zanimanje}
-              onChange={handleChange}
-            />
-            <Input
-              label="Poslodavac"
-              type="text"
-              name="poslodavac"
-              value={formData.poslodavac? formData.poslodavac : 'Nezaposlen'}
-              onChange={handleChange}
-            />
-            <Input
-              label="LinkedIn profil"
-              type="text"
-              name="linked_in"
-              value={formData.linkedin}
-              onChange={handleChange}
-            />
-            <div className="flex justify-around gap-4">
-          <button
-            onClick={handleDeleteClick}
-            className="bg-picton-blue-500 p-3 rounded-lg text-white w-full hover:opacity-75 transition-all"
-          >
-            Ažuriraj
-          </button>
-          <button
-            className="bg-white border-2 border-black p-3 rounded-lg text-black w-full"
-            onClick={() => setModalProfileOpen(false)}
-          >
-            Cancel
-          </button>
-        </div>
-            </div>
-        </div>
-      </Modal>
+      <Input
+        label="Zanimanje"
+        type="text"
+        name="zanimanje"
+        value={formData.zanimanje}
+        onChange={handleChange}
+      />
+      <Input
+        label="Poslodavac"
+        type="text"
+        name="poslodavac"
+        value={formData.poslodavac ? formData.poslodavac : 'Nezaposlen'}
+        onChange={handleChange}
+      />
+      <Input
+        label="LinkedIn profil"
+        type="text"
+        name="linked_in"
+        value={formData.linkedin}
+        onChange={handleChange}
+      />
+      
+      <div>
+<label class="block font-medium text-gray-900 dark:text-white" for="file_input">Uploadajte CV</label>
+<input class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" id="file_input" type="file"/>
+      </div>
+
+
+
+      <div className="flex justify-around gap-4 mt-3">
+        <button
+          onClick={handleDeleteClick}
+          className="bg-picton-blue-500 p-3 rounded-lg text-white w-full hover:opacity-75 transition-all"
+        >
+          Ažuriraj
+        </button>
+        <button
+          className="bg-white border-2 border-black p-3 rounded-lg text-black w-full"
+          onClick={() => setModalProfileOpen(false)}
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+</Modal>
 
 <div className="grid grid-cols-2 gap-10">
       <div>
@@ -614,31 +620,10 @@ function Tags({tags, owner}) {
     <div className="border-2 border-gray-200 rounded-lg p-4">
       <div className="flex w-full justify-between">
         <p className="text-xl font-semibold">Interesi</p>
-        {owner && <div
-          onClick={handleEditClick}
-          className="px-4 py-1 border-2 border-gray-300 rounded-md flex items-start gap-2 cursor-pointer hover:bg-gray-100 transition-colors"
-        >
-          <FeatherIcon icon="edit" className="w-5 h-5 p-0 text-gray-800" />
-          <p className="text-gray-800">Edit</p>
-        </div>}
+        
       </div>
 
-      <Modal open={modalProfileOpen} onClose={() => setModalProfileOpen(false)}>
-        <div className="flex justify-around gap-4">
-          <button
-            onClick={handleDeleteClick}
-            className="bg-red-500 p-3 rounded-lg text-white w-full"
-          >
-            Delete
-          </button>
-          <button
-            className="bg-white border-2 border-black p-3 rounded-lg text-black w-full"
-            onClick={() => setModalProfileOpen(false)}
-          >
-            Cancel
-          </button>
-        </div>
-      </Modal>
+      
 
 <div className="flex flex-wrap gap-2 mt-2">
       {tags.map((tag, index) => (
@@ -658,6 +643,57 @@ function Tags({tags, owner}) {
   );
 }
 
+function DeleteUser({user, owner}) {
+
+  const [modalDeleteOpen, setModalDelteOpen] = useState(false);
+
+
+  const handleEditClick = () => {
+    setModalDelteOpen(true);
+  };
+
+  const handleDeleteClick = () => {
+    axios.delete(`http://localhost:8000/auth/delete-user/${user.id}`)
+  };
+
+  
+
+  return (
+    <div className="border-2 border-gray-200 rounded-lg p-4">
+      <div className="flex w-full justify-between">
+        <p className="text-xl font-semibold">Obriši profil</p>
+        {owner && <div
+          onClick={handleEditClick}
+          className="px-4 py-1 border-2 bg-red-500 rounded-md flex items-start gap-2 cursor-pointer hover:opacity-75 transition-colors"
+        >
+          
+          <p className="text-white">Obriši</p>
+        </div>}
+      </div>
+
+      <Modal open={modalDeleteOpen} onClose={() => setModalDelteOpen(false)}>
+        <div className="flex flex-col gap-4">
+          <p className="text-lg font-bold">Jeste li sigurni da želite obrisati svoj račun?</p>
+          <div className="flex justify-around gap-4">
+          <button
+            onClick={handleDeleteClick}
+            className="bg-red-500 p-3 rounded-lg text-white w-full"
+          >
+            Obriši
+          </button>
+          <button
+            className="bg-white border-2 border-black p-3 rounded-lg text-black w-full"
+            onClick={() => setModalDelteOpen(false)}
+          >
+            Nazad
+          </button>
+        </div>
+        </div>
+        
+      </Modal>
+    </div>
+  );
+}
 
 export default function Main() {
   const pathname = usePathname();
@@ -736,6 +772,7 @@ export default function Main() {
         <AcademicInfo user={user} /> 
         <ProfessionalInfo user={user} owner={owner} /> 
         <Tags tags={tags} owner={owner} /> 
+        <DeleteUser user={user} owner={owner}></DeleteUser>
       </div>
     </ToastProvider>
   );

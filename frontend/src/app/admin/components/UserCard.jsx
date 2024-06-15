@@ -2,6 +2,11 @@
 
 import { useState } from "react";
 import FeatherIcon from "feather-icons-react";
+import Modal from "@/app/components/Modal";
+import axios from "axios";
+
+
+
 
 const UserCard = ({ userParam }) => {
   const user = {
@@ -14,6 +19,17 @@ const UserCard = ({ userParam }) => {
     is_verified: userParam["verifikovan"],
   };
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [modalDeleteOpen, setModalDelteOpen] = useState(false);
+
+
+  const handleEditClick = () => {
+    setModalDelteOpen(true);
+  };
+
+  const handleDeleteClick = () => {
+    axios.delete(`http://localhost:8000/auth/delete-user/${user.id}`)
+    setModalDelteOpen(false);
+  };
 
   return (
     <div className="w-full p-4 flex flex-col rounded-lg shadow-md border transition-all duration-300 ease-in-out bg-white">
@@ -82,9 +98,38 @@ const UserCard = ({ userParam }) => {
               </div>
               <button className=" text-white px-6 py-2 bg-picton-blue-500 rounded-md">Verifikuj</button>
             </div>
+            <div>
+              <button 
+              onClick={handleEditClick}
+              className="p-3 bg-red-500 text-white hover:opacity-75 rounded-md">
+                Obriši korisnika
+              </button>
+            </div>
           </div>
         </div>
       </div>
+
+          <Modal open={modalDeleteOpen} onClose={() => setModalDelteOpen(false)}>
+        <div className="flex flex-col gap-4">
+          <p className="text-lg font-bold">Jeste li sigurni da želite obrisati ovaj račun?</p>
+          <div className="flex justify-around gap-4">
+          <button
+            onClick={handleDeleteClick}
+            className="bg-red-500 p-3 rounded-lg text-white w-full"
+          >
+            Obriši
+          </button>
+          <button
+            className="bg-white border-2 border-black p-3 rounded-lg text-black w-full"
+            onClick={() => setModalDelteOpen(false)}
+          >
+            Nazad
+          </button>
+        </div>
+        </div>
+        
+      </Modal>
+
     </div>
   );
 };

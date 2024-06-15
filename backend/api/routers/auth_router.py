@@ -10,7 +10,7 @@ from fastapi import (
     Form,
 )
 from sqlalchemy.orm import Session
-from sqlalchemy import select
+from sqlalchemy import select, text
 from datetime import timedelta
 from utils import authentication, emailUtil
 from database import get_db
@@ -338,3 +338,14 @@ async def log_out(request: Request, response: Response, db: Session = Depends(ge
     response.delete_cookie("access_token")
 
     return {"detail": "Successfully logged out"}
+
+
+@router.delete("/delete-user/{user_id}")
+async def delete_user(user_id: int, db: Session = Depends(get_db)):
+
+    db.execute(
+        text("CALL delete_user_and_related_data(:user_id)"), {"user_id": user_id}
+    )
+    db.commit()
+
+    return {"detail": "User and related data deleted successfully"}
