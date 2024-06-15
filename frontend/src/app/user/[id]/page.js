@@ -11,63 +11,6 @@ import { usePathname  } from "next/navigation";
 import Link from "next/link";
 import Input from "@/app/components/Input";
 
-/* function Sablon() {
-  const [modalProfileOpen, setModalProfileOpen] = useState(false);
-  const [modalPictureOpen, setModalPictureOpen] = useState(false);
-  const { open: openToast } = useContext(ToastContext);
-
-  const handleEditClick = () => {
-    setModalProfileOpen(true);
-  };
-
-  const handleDeleteClick = () => {
-    openToast(
-      <div className="flex gap-4 pe-5">
-        <div>
-          <h1>OK</h1>
-          <p className="text-red-600">Uspješno ste sačuvali promjene</p>
-        </div>
-        <button className="mx-3 bg-blue-600 p-3 border border-black rounded-lg">
-          Undo
-        </button>
-      </div>,
-    );
-    setModalProfileOpen(false);
-  };
-
-  return (
-    <div className="border-2 border-gray-200 rounded-lg p-4">
-      <div className="flex w-full justify-between">
-        <p className="text-xl font-semibold">Naslov</p>
-        <div
-          onClick={handleEditClick}
-          className="px-4 py-1 border-2 border-gray-300 rounded-md flex items-start gap-2 cursor-pointer hover:bg-gray-100 transition-colors"
-        >
-          <FeatherIcon icon="edit" className="w-5 h-5 p-0 text-gray-800" />
-          <p className="text-gray-800">Edit</p>
-        </div>
-      </div>
-
-      <Modal open={modalProfileOpen} onClose={() => setModalProfileOpen(false)}>
-        <div className="flex justify-around gap-4">
-          <button
-            onClick={handleDeleteClick}
-            className="bg-red-500 p-3 rounded-lg text-white w-full"
-          >
-            Delete
-          </button>
-          <button
-            className="bg-white border-2 border-black p-3 rounded-lg text-black w-full"
-            onClick={() => setModalProfileOpen(false)}
-          >
-            Cancel
-          </button>
-        </div>
-      </Modal>
-    </div>
-  );
-} */
-
 
 const BasicInfo = ({ user, owner }) => {
   const [modalProfileOpen, setModalProfileOpen] = useState(false);
@@ -110,7 +53,7 @@ const handleChange = (e) => {
       </div>
       <div class="ms-3">
         <p class="text-sm text-gray-700 dark:text-neutral-400">
-          Uspjesno ste ažurirali podatke
+          Došlo je do greške prilikom ažuriranja podataka
         </p>
       </div>
     </div>
@@ -212,9 +155,10 @@ const handleChange = (e) => {
     </div>
   );
 };
-
-
 export { ImageCropper };
+
+
+
 function PersonalInformation({user, owner}) {
   const [modalProfileOpen, setModalProfileOpen] = useState(false);
   const { open: openToast } = useContext(ToastContext);
@@ -275,20 +219,28 @@ function PersonalInformation({user, owner}) {
 
 
       <Modal open={modalProfileOpen} onClose={() => setModalProfileOpen(false)}>
-        <div className="flex justify-around gap-4">
+        <div className="flex flex-col gap-3 p-5">
+            <p className="text-3xl font-bold">Promjena passworda</p>
+            <div className="flex flex-col gap-2">
+              
+
+            
+            
+            <div className="flex justify-around gap-4">
           <button
             onClick={handleDeleteClick}
-            className="bg-red-500 p-3 rounded-lg text-white w-full"
+            className="bg-picton-blue-500 p-3 rounded-lg text-white w-full hover:opacity-75 transition-all"
           >
-            Delete
+            Ažuriraj
           </button>
           <button
             className="bg-white border-2 border-black p-3 rounded-lg text-black w-full"
-            onClick={() => 
-              setModalProfileOpen(false)}
+            onClick={() => setModalProfileOpen(false)}
           >
             Cancel
           </button>
+        </div>
+            </div>
         </div>
       </Modal>
       
@@ -297,10 +249,35 @@ function PersonalInformation({user, owner}) {
 }
 
 function Password({user, owner}) {
+
   const [modalProfileOpen, setModalProfileOpen] = useState(false);
   const [modalPictureOpen, setModalPictureOpen] = useState(false);
   const { open: openToast } = useContext(ToastContext);
 
+  const [formData, setFormData] = useState({
+    current_password: "",
+    new_password: "",
+    new_password_confirm: ""
+  })
+  const [errors, setErrors] = useState({
+    current_password: "",
+    new_password: "",
+    new_password_confirm: ""
+  });
+  const [successes, setSuccesses] = useState({
+    current_password: false,
+    new_password: false,
+    new_password_confirm: false
+  });
+
+  const handleChange = (e) => {
+    const { name, value} = e.target;
+    const newValue = value;
+    setFormData((prevState) => ({
+      ...prevState,
+      [name]: newValue,
+    }));
+  };
 
   const handleEditClick = () => {
     setModalProfileOpen(true);
@@ -335,12 +312,47 @@ function Password({user, owner}) {
       </div>
 
       <Modal open={modalProfileOpen} onClose={() => setModalProfileOpen(false)}>
-        <div className="flex justify-around gap-4">
+        <div className="flex flex-col gap-3 p-5">
+            <p className="text-3xl font-bold">Promjena passworda</p>
+            <div className="flex flex-col gap-2">
+              
+
+            <Input
+              label="Novi password"
+              type="password"
+              name="new_password"
+              value={formData.current_password}
+              success={successes.current_password}
+              error={errors.current_password}
+              errorMessage={errors.current_password}
+              onChange={handleChange}
+            />
+            <Input
+              label="Novi password"
+              type="password"
+              name="new_password"
+              value={formData.new_password}
+              success={successes.new_password}
+              error={errors.new_password}
+              errorMessage={errors.new_password}
+              onChange={handleChange}
+            />
+            <Input
+              label="Potvrdite novi password"
+              type="password"
+              name="new_password_confirm"
+              value={formData.new_password_confirm}
+              success={successes.new_password_confirm}
+              error={errors.new_password_confirm}
+              errorMessage={errors.new_password_confirm}
+              onChange={handleChange}
+            />
+            <div className="flex justify-around gap-4">
           <button
             onClick={handleDeleteClick}
-            className="bg-red-500 p-3 rounded-lg text-white w-full"
+            className="bg-picton-blue-500 p-3 rounded-lg text-white w-full hover:opacity-75 transition-all"
           >
-            Delete
+            Ažuriraj
           </button>
           <button
             className="bg-white border-2 border-black p-3 rounded-lg text-black w-full"
@@ -348,6 +360,8 @@ function Password({user, owner}) {
           >
             Cancel
           </button>
+        </div>
+            </div>
         </div>
       </Modal>
     </div>
@@ -449,6 +463,28 @@ function ProfessionalInfo({user, owner}) {
     setModalProfileOpen(true);
   };
 
+
+  const [formData, setFormData] = useState({
+    zanimanje: user.zanimanje,
+    poslodavac: user.trenutni_poslodavac,
+    linkedin: user.linkedin_profil,
+    cv: user.cv
+  })
+
+
+
+  const handleChange = (e) => {
+    const { name, value} = e.target;
+    const newValue = value;
+    setFormData((prevState) => ({
+      ...prevState,
+      [name]: newValue,
+    }));
+  };
+
+
+
+
   const handleDeleteClick = () => {
     openToast(
       <div className="flex gap-4 pe-5">
@@ -478,12 +514,39 @@ function ProfessionalInfo({user, owner}) {
       </div>
 
       <Modal open={modalProfileOpen} onClose={() => setModalProfileOpen(false)}>
-        <div className="flex justify-around gap-4">
+        <div className="flex flex-col gap-3 p-5">
+            <p className="text-3xl font-bold">Promjena passworda</p>
+            <div className="flex flex-col gap-2">
+              
+
+            
+            <Input
+              label="Zanimanje"
+              type="text"
+              name="zanimanje"
+              value={formData.zanimanje}
+              onChange={handleChange}
+            />
+            <Input
+              label="Poslodavac"
+              type="text"
+              name="poslodavac"
+              value={formData.poslodavac? formData.poslodavac : 'Nezaposlen'}
+              onChange={handleChange}
+            />
+            <Input
+              label="LinkedIn profil"
+              type="text"
+              name="linked_in"
+              value={formData.linkedin}
+              onChange={handleChange}
+            />
+            <div className="flex justify-around gap-4">
           <button
             onClick={handleDeleteClick}
-            className="bg-red-500 p-3 rounded-lg text-white w-full"
+            className="bg-picton-blue-500 p-3 rounded-lg text-white w-full hover:opacity-75 transition-all"
           >
-            Delete
+            Ažuriraj
           </button>
           <button
             className="bg-white border-2 border-black p-3 rounded-lg text-black w-full"
@@ -491,6 +554,8 @@ function ProfessionalInfo({user, owner}) {
           >
             Cancel
           </button>
+        </div>
+            </div>
         </div>
       </Modal>
 
@@ -508,7 +573,10 @@ function ProfessionalInfo({user, owner}) {
         <a href={user["linkedin_profil"]} className="underline">{user["linkedin_profil"]}</a>
       </div>
       <div>
+        <a href={`http://localhost:8000/cvs/${user.id}`} target="_blank" rel="noopener noreferrer">
       <button className="px-4 py-2 bg-picton-blue-500 text-white rounded-md">Pogledaj CV</button>
+    </a>
+      
       </div>
     </div>
 

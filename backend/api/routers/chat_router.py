@@ -10,8 +10,8 @@ from sqlalchemy.orm import Session
 from sqlalchemy import select, text
 from datetime import datetime
 from typing import List
-from models import Message, ConnectionManager
-from schemas import MessageCreate, MessageResponse
+from models import Message, ConnectionManager, User
+from schemas import MessageCreate, MessageResponse, UserSchema
 from database import get_db
 import json
 
@@ -91,19 +91,27 @@ from typing import List, Dict
 async def get_latest_chats(user_id: int = Query(...), db: Session = Depends(get_db)):
     query = text(
         """
-    SELECT 
-        p1.tekst_poruke,
-        p1.datum_slanja,
-        p1.posiljalac_id,
-        p1.primalac_id,
-        k.ime as primalac_ime,
-        k.prezime as primalac_prezime,
-        k.profilna_slika as primalac_slika
-    FROM poruke p1
-    LEFT JOIN poruke p2 ON (p1.primalac_id = p2.primalac_id AND p1.datum_slanja < p2.datum_slanja)
-    JOIN korisnik k ON k.id = p1.primalac_id 
-    WHERE p2.primalac_id IS NULL AND (p1.primalac_id = :user_id OR p1.posiljalac_id = :user_id);
-    """
+        SELECT 
+    p1.tekst_poruke,
+    p1.datum_slanja,
+    p1.primalac_id,
+    p1.posiljalac_id,
+    k.ime as primalac_ime,
+    k.prezime as primalac_prezime,
+    k2.ime as posiljalac_ime,
+    k2.prezime as posiljalac_prezime
+FROM poruke p1
+JOIN korisnik k on k.id = p1.primalac_id 
+JOIN korisnik k2 on k2.id = p1.posiljalac_id 
+WHERE p1.datum_slanja = (
+    SELECT MAX(p3.datum_slanja)
+    FROM poruke p3
+    WHERE (p3.primalac_id = p1.primalac_id AND p3.posiljalac_id = p1.posiljalac_id)
+       OR (p3.primalac_id = p1.posiljalac_id AND p3.posiljalac_id = p1.primalac_id)
+)
+AND (p1.primalac_id = :user_id OR p1.posiljalac_id = :user_id);
+
+        """
     )
 
     results = db.execute(query, {"user_id": user_id}).mappings().all()
@@ -119,7 +127,19 @@ async def get_latest_chats(user_id: int = Query(...), db: Session = Depends(get_
             "primalac_id": row["primalac_id"],
             "primalac_ime": row["primalac_ime"],
             "primalac_prezime": row["primalac_prezime"],
-            "primalac_slika": row["primalac_slika"],
+            "posiljalac_ime": row["posiljalac_ime"],
+            "posiljalac_prezime": row["posiljalac_prezime"],
         }
         for row in results
     ]
+
+
+@router.get("/all_user", response_model=List[Dict])
+async def get_all_user(db: Session = Depends(get_db)):
+    users = db.query(User).all()
+
+    users_dict = [
+        {"id": user.id, "ime": user.ime, "prezime": user.prezime} for user in users
+    ]
+
+    return users_dict

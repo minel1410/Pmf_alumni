@@ -10,7 +10,6 @@ const UserCard = ({ userParam }) => {
     lastname: userParam["prezime"],
     email: userParam["email"],
     is_admin: userParam["is_admin"],
-    profile_picture: userParam["profilna_slika"],
     diploma_picture: userParam["diploma_slika"],
     is_verified: userParam["verifikovan"],
   };
@@ -25,7 +24,7 @@ const UserCard = ({ userParam }) => {
         <p className="col-span-1 font-medium text-gray-700">#{user.id}</p>
         <div className="flex gap-3 items-center col-span-2 md:col-span-3">
           <img
-            src={`/avatar/${user.profile_picture ?? "no-avatar.svg"}`}
+            src={`http://localhost:8000/files/images/profile/id/${user.id}`}
             className="h-10 w-10 rounded-full border"
             alt="Profile"
           />

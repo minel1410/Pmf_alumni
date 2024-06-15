@@ -80,3 +80,16 @@ async def get_uploaded_file(user_id: str, db: Session = Depends(get_db)):
     else:
         file_location = os.path.join("..", "images", "profile", "no-avatar.svg")
     return FileResponse(file_location)
+
+
+@router.get("/cvs/{user_id}")
+async def get_uploaded_file(user_id: str, db: Session = Depends(get_db)):
+    user = db.query(User).filter_by(id=user_id).first()
+    if user and user.cv:
+        file_location = os.path.abspath(os.path.join("..", "cvs", user.cv))
+        if os.path.exists(file_location):
+            return FileResponse(file_location)
+        else:
+            raise HTTPException(status_code=404, detail="File not found")
+    else:
+        raise HTTPException(status_code=404, detail="User or CV not found")

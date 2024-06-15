@@ -6,12 +6,40 @@ import FeatherIcon from "feather-icons-react";
 import ToastProvider from "@/app/components/Toast/ToastProvider";
 import ChatBubble from "../components/ChatBubble";
 
+const formatMessageTime = (timestamp) => {
+    const messageDate = new Date(timestamp);
+    if (isNaN(messageDate.getTime())) {
+        return ""; // Vrati prazan string ako datum nije validan
+    }
+
+    const currentDate = new Date();
+
+    if (
+      messageDate.getDate() === currentDate.getDate() &&
+      messageDate.getMonth() === currentDate.getMonth() &&
+      messageDate.getFullYear() === currentDate.getFullYear()
+    ) {
+      // Poruka je poslana danas, samo prikažemo vrijeme
+      const hours = messageDate.getHours().toString().padStart(2, '0');
+      const minutes = messageDate.getMinutes().toString().padStart(2, '0');
+      return `${hours}:${minutes}`;
+    } else {
+      // Poruka nije poslana danas, prikažemo datum i vrijeme
+      const day = messageDate.getDate().toString().padStart(2, '0');
+      const month = (messageDate.getMonth() + 1).toString().padStart(2, '0');
+      const year = messageDate.getFullYear();
+      const hours = messageDate.getHours().toString().padStart(2, '0');
+      const minutes = messageDate.getMinutes().toString().padStart(2, '0');
+      return `${day}.${month}.${year}. ${hours}:${minutes}`;
+    }
+  };
 
 export default function Main() {
   const [user, setUser] = useState({});
+  const [chatWith, setChatWith] = useState({})
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
-  const [isLoading, setIsLoading] = useState(true); // Dodano stanje za praćenje učitavanja
+  const [isLoading, setIsLoading] = useState(true); 
   const pathname = usePathname();
   const segments = pathname.split("/");
   const id = segments[segments.length - 1];
@@ -23,7 +51,6 @@ export default function Main() {
         const response = await axios.get("http://localhost:8000/auth/get_cookies", { withCredentials: true });
         if (response.status === 200) {
           setUser(response.data);
-          console.log("EVO USER: ", response.data);
         }
       } catch (error) {
         console.error(error);
@@ -33,8 +60,23 @@ export default function Main() {
   }, []);
 
   useEffect(() => {
+    const fetchChatWith = async () => {
+      try {
+        const response = await axios.get(`http://localhost:8000/auth/user-info/${id}`);
+        if (response.status === 200) {
+          console.log("USER: ", response.data)
+          setChatWith(response.data.korisnik);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchChatWith();
+  }, [id]);
+
+
+  useEffect(() => {
     if (user.id) {
-      // Dohvati stare poruke iz baze
       const fetchMessages = async () => {
         try {
           const response = await axios.get(`http://localhost:8000/chat/messages?id1=${user.id}&id2=${id}`);
@@ -42,12 +84,12 @@ export default function Main() {
         } catch (error) {
           console.error("Error fetching messages:", error);
         } finally {
-          setIsLoading(false); // Postavi isLoading na false nakon učitavanja
+          setIsLoading(false);
         }
       };
       fetchMessages();
 
-      const ws = new WebSocket(`ws://localhost:8000/chat/ws/${user.id}`);
+      const ws = new WebSocket(`ws://localhost:8000/chat/ws/${id}`);
       ws.onmessage = (event) => {
         const message = JSON.parse(event.data);
         if (message.type === "new_message") {
@@ -55,7 +97,7 @@ export default function Main() {
             tekst_poruke: message.message,
             posiljalac_id: message.sender_id,
             primalac_id: message.receiver_id,
-            datum_prijema: new Date().toISOString(),
+            datum_slanja: new Date().toISOString(), // Promijenjeno iz datum_prijema u datum_slanja
           };
           setMessages((prevMessages) => [...prevMessages, receivedMessage]);
         }
@@ -63,10 +105,14 @@ export default function Main() {
       setSocket(ws);
       return () => ws.close();
     }
-  }, [user.id]);
+  }, [user.id, id]);
 
   const formatMessageTime = (timestamp) => {
     const messageDate = new Date(timestamp);
+    if (isNaN(messageDate.getTime())) {
+        return ""; // Vrati prazan string ako datum nije validan
+    }
+
     const currentDate = new Date();
 
     if (
@@ -75,16 +121,16 @@ export default function Main() {
       messageDate.getFullYear() === currentDate.getFullYear()
     ) {
       // Poruka je poslana danas, samo prikažemo vrijeme
-      const hours = messageDate.getHours().toString().padStart(2, '0'); // 24-satni format
-      const minutes = messageDate.getMinutes().toString().padStart(2, '0'); // Pad minutes with leading zero if necessary
+      const hours = messageDate.getHours().toString().padStart(2, '0');
+      const minutes = messageDate.getMinutes().toString().padStart(2, '0');
       return `${hours}:${minutes}`;
     } else {
       // Poruka nije poslana danas, prikažemo datum i vrijeme
-      const day = messageDate.getDate().toString().padStart(2, '0'); // Pad day with leading zero if necessary
-      const month = (messageDate.getMonth() + 1).toString().padStart(2, '0'); // Pad month with leading zero if necessary
+      const day = messageDate.getDate().toString().padStart(2, '0');
+      const month = (messageDate.getMonth() + 1).toString().padStart(2, '0');
       const year = messageDate.getFullYear();
-      const hours = messageDate.getHours().toString().padStart(2, '0'); // 24-satni format
-      const minutes = messageDate.getMinutes().toString().padStart(2, '0'); // Pad minutes with leading zero if necessary
+      const hours = messageDate.getHours().toString().padStart(2, '0');
+      const minutes = messageDate.getMinutes().toString().padStart(2, '0');
       return `${day}.${month}.${year}. ${hours}:${minutes}`;
     }
   };
@@ -116,12 +162,9 @@ export default function Main() {
               className="w-16 h-16 rounded-full" />
             </div>
             <div className="flex flex-col">
-              <p className="text-white font-md">Minel Salihagić</p>
-              <p className="font-sm text-gray-400">062584050</p>
+              <p className="text-white font-md">{chatWith.ime + " " + chatWith.prezime}</p>
+              <p className="font-sm text-gray-400">{chatWith.broj_telefona}</p>
             </div>
-          </div>
-          <div>
-            <FeatherIcon icon="trash-2" className="w-8 h-8 text-white"></FeatherIcon>
           </div>
         </div>
         <div className="bg-white p-8 flex flex-col gap-3 overflow-y-scroll overflow-x-clip h-[70vh]">
@@ -139,7 +182,7 @@ export default function Main() {
                 viewer={user.id}
                 sender={message.posiljalac_id}
                 receiver={message.primalac_id}
-                name="Minel Salihagic"
+                name={chatWith.ime + " " + chatWith.prezime}
                 content={message.tekst_poruke}
                 time={formatMessageTime(message.datum_slanja)}
               />
@@ -154,6 +197,11 @@ export default function Main() {
               className="w-full focus:outline-none focus:placeholder-gray-400 text-gray-600 placeholder-gray-600 pl-12 bg-gray-300 rounded-md py-3"
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  handleSendMessage();
+                }
+              }}
             />
             <div className="absolute right-0 items-center inset-y-0 hidden sm:flex">
               <button
@@ -173,3 +221,4 @@ export default function Main() {
     </ToastProvider>
   );
 }
+
