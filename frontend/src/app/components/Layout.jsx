@@ -116,7 +116,7 @@ const Layout = ({children}) => {
                                     ></path>
                                 </svg>
                             </button>
-                            <a href="#" className="flex ms-2 md:me-24">
+                            <a href="/" className="flex ms-2 md:me-24">
                                 <img src="/logo/pmf_svg.svg" className="h-8 me-3" alt="PMF Logo" />
                                 <span className="self-center text-xl font-semibold md:text-2xl whitespace-nowrap text-white">PMF Alumni</span>
                             </a>
@@ -173,6 +173,13 @@ const Layout = ({children}) => {
                     <li className="mb-2">
                     
                     </li>
+                    {user["is_admin"] && <li>
+                        <a href="/admin" className="flex items-center gap-5 p-2 py-4 text-white hover:rounded-tl-[30px] hover:rounded-bl-[30px] hover:bg-white hover:text-charade-900 transition-all">
+                                                        <FeatherIcon icon="users" />
+
+                            <span className="ms-3">Admin panel</span>
+                        </a>
+                    </li>}
                     <li>
                         <a href="#" className="flex items-center gap-5 p-2 py-4 text-white hover:rounded-tl-[30px] hover:rounded-bl-[30px] hover:bg-white hover:text-charade-900 transition-all">
                                                         <FeatherIcon icon="home" />

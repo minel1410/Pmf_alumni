@@ -9,15 +9,19 @@ from fastapi import (
     UploadFile,
     Form,
 )
+from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from sqlalchemy import select, text
 from datetime import timedelta
+from pathlib import Path
 from utils import authentication, emailUtil
 from database import get_db
 from datetime import datetime, timedelta
 from models import User, CourseUser, Course, Department, Tag, TagUser, Study
 import uuid
 import os
+import shutil
+
 import json
 
 router = APIRouter()
@@ -349,3 +353,109 @@ async def delete_user(user_id: int, db: Session = Depends(get_db)):
     db.commit()
 
     return {"detail": "User and related data deleted successfully"}
+
+
+@router.put("/update-pw/{user_id}")
+async def update_user(user_id: int, request: Request, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.id == user_id).first()
+    request_data = await request.json()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    current_pw = request_data.get("current_password")
+    new_pw = request_data.get("new_password")
+    new_pw_confirm = request_data.get("new_password_confirm")
+
+    if new_pw != new_pw_confirm:
+        raise HTTPException(status_code=400, detail="New passwords do not match")
+
+    if not authentication.verify_password(current_pw, user.password):
+        raise HTTPException(status_code=401, detail="Current password is incorrect")
+
+    user.password = authentication.hash_password(new_pw)
+    db.commit()
+    db.refresh(user)
+    return {"detail": "Password updated successfully"}
+
+
+@router.put("/update-info/{user_id}")
+async def update_user_info(
+    user_id: int, request: Request, db: Session = Depends(get_db)
+):
+    user = db.query(User).filter(User.id == user_id).first()
+    request_data = await request.json()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    ime = request_data.get("ime")
+    prezime = request_data.get("prezime")
+    zanimanje = request_data.get("zanimanje")
+    mjesto_stanovanja = request_data.get("mjesto_stanovanja")
+
+    user.ime = ime
+    user.prezime = prezime
+    user.zanimanje = zanimanje
+    user.mjesto_stanovanja = mjesto_stanovanja
+
+    db.commit()
+    db.refresh(user)
+    return {"detail": "Info updated successfully"}
+
+
+@router.put("/update-details/{user_id}")
+async def update_user_details(
+    user_id: int, request: Request, db: Session = Depends(get_db)
+):
+    user = db.query(User).filter(User.id == user_id).first()
+    request_data = await request.json()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    ime = request_data.get("ime")
+    prezime = request_data.get("prezime")
+    email = request_data.get("email")
+    broj_telefona = request_data.get("broj_telefona")
+
+    user.ime = ime
+    user.prezime = prezime
+    user.email = email
+    user.broj_telefona = broj_telefona
+
+    db.commit()
+    db.refresh(user)
+    print(user)
+    return {"detail": "Info updated successfully"}
+
+
+@router.put("/update-professional-info/{user_id}")
+async def update_professional_info(
+    user_id: int,
+    request: Request,
+    db: Session = Depends(get_db),
+):
+    user = db.query(User).filter(User.id == user_id).first()
+    form_data = await request.form()
+    file = form_data.get("cv")
+    print(file)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    user.zanimanje = form_data.get("zanimanje")
+    user.trenutni_poslodavac = form_data.get("poslodavac")
+    user.linkedin_profil = form_data.get("linkedin")
+
+    if file and file != "undefined" and file != "null":
+        print("TUSMO")
+
+        file_extension = os.path.splitext(file.filename)[1]
+        unique_filename = f"{uuid.uuid4()}{file_extension}"
+        file_location = os.path.join("..", "cvs", unique_filename)
+        with open(file_location, "wb+") as file_object:
+            shutil.copyfileobj(file.file, file_object)
+        user.cv = unique_filename
+
+    db.commit()
+    db.refresh(user)
+    return JSONResponse(
+        status_code=200, content={"detail": "Professional info updated successfully"}
+    )
