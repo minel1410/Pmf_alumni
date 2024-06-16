@@ -4,28 +4,31 @@ import React, { useEffect, useState } from "react";
 import SignIn from "./components/SignIn";
 import SignUp from "./components/SignUp";
 import { motion } from "framer-motion"
-import { get_jwt } from "@/lib/utils";
 import axios from "axios";
 
 const Authentication = () => {
 
-  const [jwt, setJwt] = useState(null);
+  const [user, setUser] = useState(null);
 
-  useEffect(() => {
-    const fetchJwt = async () => {
-      const token = await get_jwt(); // Pretpostavljamo da `get_jwt` vraća JWT ili `null`
-      setJwt(token);
+   useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await axios.get("http://localhost:8000/auth/get_cookies", { withCredentials: true });
+        if (response.status === 200) {
+          setUser(response.data);
+        }
+      } catch (error) {
+
+      }
     };
-
-    fetchJwt();
+    fetchUser();
   }, []);
 
   useEffect(() => {
-    console.log('JWT:', jwt); // Dodaj ovu liniju za debugiranje
-    if (jwt) {
-      window.location.href = '/';
+    if (user) {
+      window.location.href = `/user/${user.id}`;
     }
-  }, [jwt]);
+  }, [user]);
 
   
   const signUpButtonRef = React.createRef();
@@ -56,7 +59,7 @@ const Authentication = () => {
     initial={{ opacity: 0, scale: 0.5 }}
     animate={{ opacity: 1, scale: 1 }}
     transition={{ duration: 0.5 }}
-      className="container w-full h-full md:h-4/5 relative overflow-y-scroll overflow-x-hidden bg-white sm:rounded-lg"
+      className="container w-full h-full md:h-4/5 relative overflow-hidden bg-white sm:rounded-lg"
       id="container"
       ref={containerRef}
     >

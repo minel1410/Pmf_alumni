@@ -8,17 +8,17 @@ function Progress({ step }) {
     return (
         <div className="flex flex-col items-center justify-center pt-8 bg-white w-full">
             <div className="relative flex items-center justify-between w-3/4 mb-8">
-                {/* Siva traka pozadine */}
+                
                 <div
                     className="absolute top-1/2 left-0 shadow-xl w-full h-1 bg-gray-300 transform -translate-y-1/2"
                     style={{ zIndex: -1 }}
                 ></div>
-                {/* Zelena traka progresa */}
+
                 <div
                     className="absolute top-1/2 left-0 h-1 shadow-xl bg-green-500 transform -translate-y-1/2 transition-all duration-300"
                     style={{ width: `${(currentStep - 1) / 2 * 100}%` }}
                 ></div>
-                {/* Krugovi koraka */}
+
                 {[1, 2, 3].map((step, idx) => (
                     <div
                         key={idx}
@@ -30,7 +30,7 @@ function Progress({ step }) {
                     </div>
                 ))}
             </div>
-            {/* Naslovi koraka */}
+
             <div className="flex justify-between w-full">
                 {['Registracija', 'Interesovanja', 'Slika diplome'].map((label, idx) => (
                     <div

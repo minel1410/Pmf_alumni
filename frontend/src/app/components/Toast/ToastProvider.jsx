@@ -20,13 +20,14 @@ export default function ToastProvider({ children }) {
         {toasts.map(({ id, component }) => (
           <div
             key={id}
-           className="relative bg-gray-200 border border-gray-600 rounded-md shadow-md p-6 transition duration-300 ease-in-out animate-fadeIn"
+           className="relative max-w-xs bg-white border border-gray-200 rounded-xl shadow-2xl dark:bg-neutral-800 dark:border-neutral-700 flex gap-4 items-center"
   onAnimationEnd={() => {
     close(id);
   }}
           >
-            <X className="absolute top-3 right-3 w-4 h-4" onClick={() => close(id)}></X>
             {component}
+            <X className="w-4 h-4 me-4 hover:cursor-pointer" onClick={() => close(id)}></X>
+            
           </div>
         ))}
       </div>

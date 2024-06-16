@@ -1,4 +1,13 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Text, Date
+from sqlalchemy import (
+    Boolean,
+    Column,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+    Date,
+    DateTime,
+)
 from database import Base
 from typing import Annotated, Union
 from pydantic import BaseModel
@@ -67,6 +76,35 @@ class Study(Base):
 
     studij_id = Column(Integer, primary_key=True, autoincrement=True)
     naziv = Column(Text)
+
+
+from typing import List
+from fastapi import WebSocket
+
+
+class Message(Base):
+    __tablename__ = "poruke"
+    poruka_id = Column(Integer, primary_key=True, autoincrement=True)
+    tekst_poruke = Column(Text)
+    datum_slanja = Column(DateTime)
+    posiljalac_id = Column(Integer, ForeignKey("korisnik.id"), nullable=False)
+    primalac_id = Column(Integer, ForeignKey("korisnik.id"), nullable=False)
+
+
+class ConnectionManager:
+    def __init__(self):
+        self.active_connections: List[WebSocket] = []
+
+    async def connect(self, websocket: WebSocket):
+        await websocket.accept()
+        self.active_connections.append(websocket)
+
+    def disconnect(self, websocket: WebSocket):
+        self.active_connections.remove(websocket)
+
+    async def broadcast(self, message: str):
+        for connection in self.active_connections:
+            await connection.send_text(message)
 
 
 class Tag(Base):

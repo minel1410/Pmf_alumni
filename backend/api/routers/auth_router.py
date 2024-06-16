@@ -9,16 +9,19 @@ from fastapi import (
     UploadFile,
     Form,
 )
-from fastapi.security import OAuth2AuthorizationCodeBearer
+from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
-from sqlalchemy import select
+from sqlalchemy import select, text
 from datetime import timedelta
+from pathlib import Path
 from utils import authentication, emailUtil
 from database import get_db
 from datetime import datetime, timedelta
-from models import User, CourseUser, Course, Department, Token, Tag, TagUser, Study
+from models import User, CourseUser, Course, Department, Tag, TagUser, Study
 import uuid
 import os
+import shutil
+
 import json
 
 router = APIRouter()
@@ -78,7 +81,7 @@ async def register_user(
     db.add(new_course_user)
     db.commit()
 
-    token_expires = timedelta(days=30)  # Ovo ostaje za generiranje tokena
+    token_expires = timedelta(days=30)
     token = authentication.create_access_token(
         {"user_id": new_user.id},
         expires_delta=token_expires,
@@ -192,7 +195,7 @@ async def login_user(
         print(cookie_params)
 
         response.set_cookie(**cookie_params)
-        return {"message": "Login successful", "cookie": cookie_params}
+        return {"message": "Login successful", "cookie": cookie_params, "id": user.id}
 
     else:
         raise HTTPException(status_code=401, detail="Netačan password")
@@ -201,7 +204,6 @@ async def login_user(
 @router.get("/get_cookies/")
 async def get_cookies(request: Request, db: Session = Depends(get_db)):
     cookie = request.cookies.get("access_token")
-    print(cookie)
     if not cookie:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="No access token provided"
@@ -237,7 +239,6 @@ async def post_diploma(
     IMAGEDIR = "../images/"
     os.makedirs(IMAGEDIR, exist_ok=True)
 
-    # Allowed content types
     allowed_content_types = [
         "image/jpeg",
         "image/png",
@@ -247,7 +248,6 @@ async def post_diploma(
         "image/gif",
     ]
 
-    # Validate content type
     if file.content_type not in allowed_content_types:
         raise HTTPException(
             status_code=400,
@@ -278,7 +278,6 @@ async def post_diploma(
 
 @router.get("/user-info/{id}")
 async def get_user_info(id: int, db: Session = Depends(get_db)):
-    # Prvi upit za dobijanje informacija o korisniku
     korisnik_info_query = (
         select(
             User.id,
@@ -318,7 +317,6 @@ async def get_user_info(id: int, db: Session = Depends(get_db)):
     if not korisnik_info_result:
         raise HTTPException(status_code=404, detail="Korisnik not found")
 
-    # Drugi upit za dobijanje tagova korisnika
     tag_query = (
         select(Tag.naziv)
         .join(TagUser, TagUser.tag_id == Tag.tag_id)
@@ -327,8 +325,137 @@ async def get_user_info(id: int, db: Session = Depends(get_db)):
 
     tag_results = db.execute(tag_query).all()
 
-    # Kreiranje rezultata kao JSON
     korisnik_info = korisnik_info_result._asdict()
     tags = [tag.naziv for tag in tag_results]
 
     return {"korisnik": korisnik_info, "tags": tags}
+
+
+@router.delete("/log_out")
+async def log_out(request: Request, response: Response, db: Session = Depends(get_db)):
+    cookie = request.cookies.get("access_token")
+    if not cookie:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="No access token provided"
+        )
+
+    response.delete_cookie("access_token")
+
+    return {"detail": "Successfully logged out"}
+
+
+@router.delete("/delete-user/{user_id}")
+async def delete_user(user_id: int, db: Session = Depends(get_db)):
+
+    db.execute(
+        text("CALL delete_user_and_related_data(:user_id)"), {"user_id": user_id}
+    )
+    db.commit()
+
+    return {"detail": "User and related data deleted successfully"}
+
+
+@router.put("/update-pw/{user_id}")
+async def update_user(user_id: int, request: Request, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.id == user_id).first()
+    request_data = await request.json()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    current_pw = request_data.get("current_password")
+    new_pw = request_data.get("new_password")
+    new_pw_confirm = request_data.get("new_password_confirm")
+
+    if new_pw != new_pw_confirm:
+        raise HTTPException(status_code=400, detail="New passwords do not match")
+
+    if not authentication.verify_password(current_pw, user.password):
+        raise HTTPException(status_code=401, detail="Current password is incorrect")
+
+    user.password = authentication.hash_password(new_pw)
+    db.commit()
+    db.refresh(user)
+    return {"detail": "Password updated successfully"}
+
+
+@router.put("/update-info/{user_id}")
+async def update_user_info(
+    user_id: int, request: Request, db: Session = Depends(get_db)
+):
+    user = db.query(User).filter(User.id == user_id).first()
+    request_data = await request.json()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    ime = request_data.get("ime")
+    prezime = request_data.get("prezime")
+    zanimanje = request_data.get("zanimanje")
+    mjesto_stanovanja = request_data.get("mjesto_stanovanja")
+
+    user.ime = ime
+    user.prezime = prezime
+    user.zanimanje = zanimanje
+    user.mjesto_stanovanja = mjesto_stanovanja
+
+    db.commit()
+    db.refresh(user)
+    return {"detail": "Info updated successfully"}
+
+
+@router.put("/update-details/{user_id}")
+async def update_user_details(
+    user_id: int, request: Request, db: Session = Depends(get_db)
+):
+    user = db.query(User).filter(User.id == user_id).first()
+    request_data = await request.json()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    ime = request_data.get("ime")
+    prezime = request_data.get("prezime")
+    email = request_data.get("email")
+    broj_telefona = request_data.get("broj_telefona")
+
+    user.ime = ime
+    user.prezime = prezime
+    user.email = email
+    user.broj_telefona = broj_telefona
+
+    db.commit()
+    db.refresh(user)
+    print(user)
+    return {"detail": "Info updated successfully"}
+
+
+@router.put("/update-professional-info/{user_id}")
+async def update_professional_info(
+    user_id: int,
+    request: Request,
+    db: Session = Depends(get_db),
+):
+    user = db.query(User).filter(User.id == user_id).first()
+    form_data = await request.form()
+    file = form_data.get("cv")
+    print(file)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    user.zanimanje = form_data.get("zanimanje")
+    user.trenutni_poslodavac = form_data.get("poslodavac")
+    user.linkedin_profil = form_data.get("linkedin")
+
+    if file and file != "undefined" and file != "null":
+        print("TUSMO")
+
+        file_extension = os.path.splitext(file.filename)[1]
+        unique_filename = f"{uuid.uuid4()}{file_extension}"
+        file_location = os.path.join("..", "cvs", unique_filename)
+        with open(file_location, "wb+") as file_object:
+            shutil.copyfileobj(file.file, file_object)
+        user.cv = unique_filename
+
+    db.commit()
+    db.refresh(user)
+    return JSONResponse(
+        status_code=200, content={"detail": "Professional info updated successfully"}
+    )

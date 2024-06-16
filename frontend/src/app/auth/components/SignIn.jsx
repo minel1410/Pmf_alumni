@@ -6,6 +6,8 @@ import Link from 'next/link';
 
 
 const SignIn = () => {
+
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -19,7 +21,6 @@ const SignIn = () => {
     email: false,
     password: false,
   });
-
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     const newValue = type === "checkbox" ? checked : value;
@@ -75,7 +76,7 @@ const SignIn = () => {
         password: "",
       }));
       console.log("success", response.data);
-      window.location.href = "/"; 
+      window.location.href = `/user/${response.data["id"]}`
     })
     .catch((error) => {
       console.error(error);

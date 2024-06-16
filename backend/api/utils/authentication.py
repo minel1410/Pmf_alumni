@@ -2,10 +2,9 @@ from fastapi import Depends, FastAPI, HTTPException, status
 from datetime import datetime, timedelta, timezone
 from jose import JWTError, jwt
 from typing import Annotated, Union
-from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
+from fastapi.security import OAuth2PasswordBearer
 from datetime import timedelta  # Import timedelta explicitly
 from fastapi import Request, HTTPException
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from database import SessionLocal, engine
 from passlib.context import CryptContext
 

@@ -53,7 +53,7 @@ const App = () => {
       );
 
       if (response.status === 200) {
-        window.location.href = '/';
+        window.location.href = `/user/${user["id"]}`;
       } else {
         window.location.href = '/auth';
       }
