@@ -10,10 +10,6 @@ export const Hero = () => {
           <h1>
             <span className={styles.highlighted}>Personalizirani oglasi:</span> Brz i jednostavan put do Vašeg novog posla!
           </h1>
-          <p className={styles.paragraph}>
-            Nudimo najveću bazu poslova i kompanija za alumni studente s Prirodno-matematičkog fakulteta u Sarajevu.
-            Svaki dan, korisnici posjećuju našu platformu kako bi postavili oglase, pronašli poslove ili istražili mogućnosti karijere.
-          </p>
         </div>
       </div>
     </div>

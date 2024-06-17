@@ -52,11 +52,12 @@
     .jobList {
     max-height: 60vh;
     padding-right: 1rem;
+    margin-bottom: 3rem;
     }
     
     .jobItem {
     position: relative;
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
     }
     
     .jobActions {

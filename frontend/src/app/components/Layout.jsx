@@ -208,6 +208,28 @@ const Layout = ({children}) => {
                             <span className="ms-3">Poslovi</span>
                         </a>
                     </li>
+                    {user["is_admin"] ? (
+                      <li>
+                        <a
+                          href="/admin/all-jobs"
+                          className="flex items-center gap-5 p-2 py-4 text-white hover:rounded-tl-[30px] hover:rounded-bl-[30px] hover:bg-white hover:text-charade-900 transition-all"
+                        >
+                          <FeatherIcon icon="briefcase" />
+                          <span className="ms-3">Svi poslovi</span>
+                        </a>
+                      </li>
+                    ) : (
+                      <li>
+                        <a
+                          href="/user/my-jobs"
+                          className="flex items-center gap-5 p-2 py-4 text-white hover:rounded-tl-[30px] hover:rounded-bl-[30px] hover:bg-white hover:text-charade-900 transition-all"
+                        >
+                          <FeatherIcon icon="briefcase" />
+                          <span className="ms-3">Moji poslovi</span>
+                        </a>
+                      </li>
+                    )}
+
                     <li>
                         <a href={`/user/${user["id"]}`} className="flex items-center gap-5 p-2 py-4 text-white hover:rounded-tl-[30px] hover:rounded-bl-[30px] hover:bg-white hover:text-charade-900 transition-all">
                                                         <FeatherIcon icon="user" />

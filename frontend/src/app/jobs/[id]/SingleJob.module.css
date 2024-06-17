@@ -22,7 +22,9 @@
 }
 
 .headerSection {
-    background-color: gray;
+    background-color: #627F9C;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
 }
 
 .headerContent {
@@ -39,7 +41,7 @@
     margin-bottom: 0.75rem;
     font-size: 1.5rem;
     color: #1E3A8A;
-    font-weight: 500;
+    font-weight: bold;
     display: inline-block;
     text-decoration: none;
 }
@@ -54,7 +56,8 @@
 }
 
 .detailsSection {
-    background-color: #e5e7eb;
+    background-color: #D8DFE6;
+    border-radius: 0.5rem;
 }
 
 .detailsContent {
@@ -83,7 +86,7 @@
 .iconStyle {
     width: 2rem;
     height: 2rem;
-    color: #94CEEC;
+    color: #627F9C;
 }
 
 .detailText {
@@ -124,7 +127,7 @@
 
 .applyButton {
     color: white;
-    background-image: linear-gradient(to right, #3b82f6, #2563eb, #1d4ed8);
+    background-image: linear-gradient(to right, #3b82f6, #2563eb, #1E3A8A);
     font-weight: 500;
     border-radius: 0.5rem;
     font-size: 1rem;

@@ -15,7 +15,20 @@ const AllJobs = () => {
     const [jobs, setJobs] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [jobToDelete, setJobToDelete] = useState(null);
+    const [showAddJobForm, setShowAddJobForm] = useState(false);
     const [showUpdateJobForm, setShowUpdateJobForm] = useState(false);
+    const [newJobData, setNewJobData] = useState({
+        job_name: '',
+        company_name: '',
+        email: '',
+        job_description: '',
+        location: '',
+        job_type: '',
+        start_date: '',
+        end_date: '',
+        tag_id: ''
+    });
+
     const [updatedJobData, setUpdatedJobData] = useState({
         job_name: '',
         company_name: '',
@@ -27,20 +40,21 @@ const AllJobs = () => {
         end_date: '',
         tag_id: ''
     });
+
     const [jobToUpdate, setJobToUpdate] = useState(null);
-    const [selectedTag, setSelectedTag] = useState(null);
-    const [id, setId] = useState(null);
+    const [selectedTag, setSelectedTag] = useState(null); 
+    const [id, setId] = useState(null); 
 
     useEffect(() => {
       const fetchData = async () => {
-          try {
+          try {            
               const userResponse = await axios.get("http://localhost:8000/auth/get_cookies", { withCredentials: true });
               const userId = userResponse.data.id; 
               setId(userId);
-  
+
               const jobsResponse = await axios.get(`http://localhost:8000/jobs/admin/all_jobs`);
               setJobs(jobsResponse.data.data);
-  
+
               const tagsResponse = await axios.get(`http://localhost:8000/jobs/tags`);
               setTags(tagsResponse.data);
   
@@ -49,8 +63,9 @@ const AllJobs = () => {
           }
       };
   
-      fetchData();
+      fetchData(); 
   }, []);
+  
 
     const confirmDelete = (jobId) => {
         setJobToDelete(jobId);
@@ -95,7 +110,25 @@ const AllJobs = () => {
             setJobToUpdate(jobId);
             
             setShowUpdateJobForm(true);
+            
+            
         }
+    };
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setNewJobData({
+            ...newJobData,
+            [name]: value
+        });
+    };
+
+    const handleTagChange = (selectedOption) => {
+        setSelectedTag(selectedOption);
+        setNewJobData({
+            ...newJobData,
+            tag_id: selectedOption ? selectedOption.value : '' 
+        });
     };
 
     const handleUpdateChange = (e) => {
@@ -112,6 +145,55 @@ const AllJobs = () => {
             ...updatedJobData,
             tag_id: selectedOption ? selectedOption.value : ''
         });
+    };
+
+    const onSubmitNewJob = async (e) => {
+        e.preventDefault();
+    
+        try {
+            const response = await fetch(`http://localhost:8000/jobs/create`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    job_name: newJobData.job_name,
+                    company_name: newJobData.company_name,
+                    email: newJobData.email,
+                    job_description: newJobData.job_description,
+                    location: newJobData.location,
+                    job_type: newJobData.job_type,
+                    start_date: newJobData.start_date,
+                    end_date: newJobData.end_date,
+                    tag_id: newJobData.tag_id, 
+                    user_id: id,
+                }),
+            });
+            if (!response.ok) {
+                throw new Error('Ne mogu dodati novi posao');
+            }
+    
+            const data = await response.json();
+            console.log(data);
+    
+            setNewJobData({
+                job_name: '',
+                company_name: '',
+                email: '',
+                job_description: '',
+                location: '',
+                job_type: '',
+                start_date: '',
+                end_date: '',
+                tag_id: '' 
+            });
+    
+            setShowAddJobForm(false);
+            setJobs([...jobs, data]); 
+    
+        } catch (error) {
+            console.error(error);
+        }
     };
 
     const onSubmitUpdatedJob = async (e) => {
@@ -151,11 +233,17 @@ const AllJobs = () => {
             console.error(error);
         }
     };
-
     return (
         <div className={styles.container}>
           <div className={styles.header}>
             <h1 className={styles.headerTitle}>Svi poslovi</h1>
+            <button
+              type="button"
+              onClick={() => setShowAddJobForm(true)}
+              className={styles.addButton}
+            >
+              Dodaj posao
+            </button>
           </div>
           <div className={styles.results}>
             <h1 className={styles.resultsTitle}>Rezultati({jobs.length})</h1>
@@ -201,91 +289,183 @@ const AllJobs = () => {
             </div>
           </Modal>
     
+          {showAddJobForm && (
+                  <Modal open={showAddJobForm} onClose={() => setShowAddJobForm(false)}>
+                  <form onSubmit={onSubmitNewJob} className={styles.form}>
+                    <h2 className={styles.formTitle}>Dodaj novi posao</h2>
+                    <Input
+                      type="text"
+                      name="job_name"
+                      value={newJobData.job_name}
+                      onChange={handleChange}
+                      label="Naziv posla"
+                      className={styles.formInput}
+                    />
+                    <Input
+                      type="text"
+                      name="company_name"
+                      value={newJobData.company_name}
+                      onChange={handleChange}
+                      label="Ime firme"
+                      className={styles.formInput}
+                    />
+                    <Input
+                      type="email"
+                      name="email"
+                      value={newJobData.email}
+                      onChange={handleChange}
+                      label="Email"
+                      className={styles.formInput}
+                    />
+                    <Input
+                      type="text"
+                      name="job_description"
+                      value={newJobData.job_description}
+                      onChange={handleChange}
+                      label="Opis posla"
+                      className={styles.formInput}
+                    />
+                    <Input
+                      type="text"
+                      name="location"
+                      value={newJobData.location}
+                      onChange={handleChange}
+                      label="Lokacija"
+                      className={styles.formInput}
+                    />
+                    <Input
+                      type="text"
+                      name="job_type"
+                      value={newJobData.job_type}
+                      onChange={handleChange}
+                      label="Tip posla"
+                      className={styles.formInput}
+                    />
+                    <Input
+                      type="date"
+                      name="start_date"
+                      value={newJobData.start_date}
+                      onChange={handleChange}
+                      label="Datum početka"
+                      className={styles.formInput}
+                    />
+                    <Input
+                      type="date"
+                      name="end_date"
+                      value={newJobData.end_date}
+                      onChange={handleChange}
+                      label="Datum završetka"
+                      className={styles.formInput}
+                    />
+                    <div className={styles.formInput}>
+                      <label htmlFor="tags" className={styles.formLabel}>Tagovi</label>
+                      <Select
+                        id="tags"
+                        name="tags"
+                        placeholder="Odaberi..."
+                        options={tags.map(tag => ({ value: tag.tag_id, label: tag.naziv }))}
+                        onChange={handleTagChange}
+                        value={selectedTag}
+                        className={styles.selectInput}
+                      />
+                    </div>
+                    <div className={styles.formFooter}>
+                      <button
+                        type="submit"
+                        className={styles.submitButton}
+                      >
+                        Dodaj posao
+                      </button>
+                    </div>
+                  </form>
+                </Modal>
+          )}
+    
           {showUpdateJobForm && (
             <Modal open={showUpdateJobForm} onClose={() => setShowUpdateJobForm(false)}>
-              <form onSubmit={onSubmitUpdatedJob} className={styles.form}>
-                <h2 className={styles.formTitle}>Ažuriraj posao</h2>
-                <Input
-                  type="text"
-                  name="job_name"
-                  value={updatedJobData.job_name}
-                  onChange={handleUpdateChange}
-                  label="Naziv posla"
-                  className={styles.formInput}
+            <form onSubmit={onSubmitUpdatedJob} className={styles.form}>
+              <h2 className={styles.formTitle}>Ažuriraj posao</h2>
+              <Input
+                type="text"
+                name="job_name"
+                value={updatedJobData.job_name}
+                onChange={handleUpdateChange}
+                label="Naziv posla"
+                className={styles.formInput}
+              />
+              <Input
+                type="text"
+                name="company_name"
+                value={updatedJobData.company_name}
+                onChange={handleUpdateChange}
+                label="Ime firme"
+                className={styles.formInput}
+              />
+              <Input
+                type="email"
+                name="email"
+                value={updatedJobData.email}
+                onChange={handleUpdateChange}
+                label="Email"
+                className={styles.formInput}
+              />
+              <Input
+                type="text"
+                name="job_description"
+                value={updatedJobData.job_description}
+                onChange={handleUpdateChange}
+                label="Opis posla"
+                className={styles.formInput}
+              />
+              <Input
+                type="text"
+                name="location"
+                value={updatedJobData.location}
+                onChange={handleUpdateChange}
+                label="Lokacija"
+                className={styles.formInput}
+              />
+              <Input
+                type="text"
+                name="job_type"
+                value={updatedJobData.job_type}
+                onChange={handleUpdateChange}
+                label="Tip posla"
+                className={styles.formInput}
+              />
+              <Input
+                type="date"
+                name="start_date"
+                value={updatedJobData.start_date}
+                onChange={handleUpdateChange}
+                label="Datum početka"
+                className={styles.formInput}
+              />
+              <Input
+                type="date"
+                name="end_date"
+                value={updatedJobData.end_date}
+                onChange={handleUpdateChange}
+                label="Datum završetka"
+                className={styles.formInput}
+              />
+              <div className={styles.formInput}>
+              <label htmlFor="tags" className={styles.formLabel}>Tagovi</label>
+                <Select
+                  id="tags"
+                  name="tags"
+                  placeholder="Odaberi..."
+                  options={tags.map(tag => ({ value: tag.tag_id, label: tag.naziv }))}
+                  onChange={handleUpdateTagChange}
+                  value={selectedTag}
+                  className={styles.selectInput}
                 />
-                <Input
-                  type="text"
-                  name="company_name"
-                  value={updatedJobData.company_name}
-                  onChange={handleUpdateChange}
-                  label="Ime firme"
-                  className={styles.formInput}
-                />
-                <Input
-                  type="email"
-                  name="email"
-                  value={updatedJobData.email}
-                  onChange={handleUpdateChange}
-                  label="Email"
-                  className={styles.formInput}
-                />
-                <Input
-                  type="text"
-                  name="job_description"
-                  value={updatedJobData.job_description}
-                  onChange={handleUpdateChange}
-                  label="Opis posla"
-                  className={styles.formInput}
-                />
-                <Input
-                  type="text"
-                  name="location"
-                  value={updatedJobData.location}
-                  onChange={handleUpdateChange}
-                  label="Lokacija"
-                  className={styles.formInput}
-                />
-                <Input
-                  type="text"
-                  name="job_type"
-                  value={updatedJobData.job_type}
-                  onChange={handleUpdateChange}
-                  label="Tip posla"
-                  className={styles.formInput}
-                />
-                <Input
-                  type="date"
-                  name="start_date"
-                  value={updatedJobData.start_date}
-                  onChange={handleUpdateChange}
-                  label="Datum početka"
-                  className={styles.formInput}
-                />
-                <Input
-                  type="date"
-                  name="end_date"
-                  value={updatedJobData.end_date}
-                  onChange={handleUpdateChange}
-                  label="Datum završetka"
-                  className={styles.formInput}
-                />
-                <div className={styles.formInput}>
-                  <label htmlFor="tags" className={styles.formLabel}>Tagovi</label>
-                  <Select
-                    id="tags"
-                    name="tags"
-                    placeholder="Odaberi..."
-                    options={tags.map(tag => ({ value: tag.tag_id, label: tag.naziv }))}
-                    onChange={handleUpdateTagChange}
-                    value={selectedTag}
-                    className={styles.selectInput}
-                  />
-                </div>
-                <div className={styles.formFooter}>
-                  <button
-                    type="submit"
-                    className={styles.submitButton}
-                  >
+              </div>
+              <div className={styles.formFooter}>
+                <button
+                  type="submit"
+                  className={styles.submitButton}
+                >
                   Ažuriraj posao
                 </button>
               </div>
