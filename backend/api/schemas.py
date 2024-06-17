@@ -59,21 +59,46 @@ class RegisterSchema(BaseModel):
     department: DepartmentSchema
 
 
-class EventTypeSchema(BaseModel): 
+class EventTypeSchema(BaseModel):
+    event_type_id:int 
     event_type_name: str
 
 
 class EventSchema(BaseModel):
-    event_name: str
+    event_id:Optional[int]=None
+    event_name: Optional[str]=None
     event_description: Optional[str] = None
     street: Optional[str]= None
     city: Optional[str]= None
-    event_type_id: int
-    user_id: int
-    event_date: datetime
+    event_type_id: Optional[int]=None
+    user_id: Optional[int]=None
+    event_date: Optional[datetime]=None
     event_image: Optional[str] = None
 
 
 class EventTagSchema(BaseModel):
     tag_id: int
     event_id: int
+
+class PostSchema(BaseModel):
+    post_id: int
+    title: Optional[str] = None
+    content: str
+    post_date:date
+    user_id: int
+    post_image:Optional[str]=None
+
+class PostDislikeSchema(BaseModel):
+    user_id:int
+    post_id:int
+
+class PostLikeSchema(BaseModel):
+    user_id:int
+    post_id:int
+
+class PostCommentUserSchema(BaseModel):
+    comment:str
+    comment_date:date
+    user_id:int
+    post_id:int
+

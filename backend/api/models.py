@@ -117,3 +117,36 @@ class EventTag(Base):
     tag_dogadjaja_id = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
     tag_id = Column(Integer, ForeignKey("tag.tag_id"), nullable=False) 
     dogadjaj_id = Column(Integer, ForeignKey("dogadjaj.dogadjaj_id"),nullable=False)
+
+class Post(Base):
+    __tablename__="post"
+
+    post_id=Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+    naslov=Column(String, nullable=True)
+    sadrzaj=Column(Text,nullable=False)
+    datum_objave=Column(Date, nullable=False)
+    korisnik_id=Column(Integer,ForeignKey("korisnik.id"),nullable=False)
+    naziv_slike=Column(String,nullable=True)
+
+class PostDislike(Base):
+    __tablename__="dislajk_post"
+
+    id=Column(Integer,primary_key=True,autoincrement=True,nullable=False)
+    korisnik_id=Column(Integer,ForeignKey("korisnik.id"),nullable=False)
+    post_id=Column(Integer,ForeignKey("post.post_id"),nullable=False)
+
+class PostLike(Base):
+    __tablename__="lajk_post"
+    
+    id=Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+    korisnik_id=Column(Integer,ForeignKey("korisnik.id"),nullable=False)
+    post_id=Column(Integer,ForeignKey("post.post_id"),nullable=False)
+
+class PostCommentUser(Base):
+    __tablename__="komentar_korisnik_post"
+
+    id=Column(Integer, primary_key=True,autoincrement=True,nullable=False)
+    komentar=Column(Text, nullable=False)
+    datum_komentara=Column(Date,nullable=False)
+    korisnik_id=Column(Integer,ForeignKey("korisnik.id"),nullable=False)
+    post_id=Column(Integer,ForeignKey("post.post_id"),nullable=False)

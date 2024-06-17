@@ -13,15 +13,25 @@ from fastapi.security import OAuth2AuthorizationCodeBearer
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
 from datetime import timedelta
+from schemas import EventSchema
 from utils import authentication, emailUtil
 from database import get_db
 from datetime import datetime, timedelta
-from models import Event, EventTag, User, CourseUser, Course, Department, Token, Tag, TagUser
+from models import Event, EventTag, EventType, User, CourseUser, Course, Department, Token, Tag, TagUser
 import uuid
 import os
 import json
 
 router = APIRouter()
+
+@router.get("/tags")
+async def get_tags(db: Session = Depends(get_db)):
+    tags = db.query(Tag).all()
+    return tags
+@router.get("/event-type")
+async def get_event_type(db:Session=Depends(get_db)):
+    event_type=db.query(EventType).all()
+    return event_type
 
 #dogadjaji za koje je zainteresiran user
 @router.get("/user/{user_id}")
@@ -147,6 +157,7 @@ async def create_new_event(request: Request, db: Session = Depends(get_db)):
 
     return {"message": "Uspješno ste dodali novi event!", "event_id": new_event_id, "status": 200}
 
+#Brisanje dogadjaja
 @router.delete("/delete/{event_id}")
 async def delete_event(event_id: int, db: Session = Depends(get_db)):
     event = db.query(Event).filter(Event.dogadjaj_id == event_id).first()
@@ -164,3 +175,38 @@ async def delete_event(event_id: int, db: Session = Depends(get_db)):
     db.commit()
 
     return {"message": f"Dogadjaj sa ID-ijem {event_id} je uspješno obrisan", "status": 200}
+
+#detlji o dogadjaju
+@router.get("/event_info/{event_id}")
+async def get_event_info(event_id:int, db:Session=Depends(get_db)):
+    event = db.query(Event).filter(Event.dogadjaj_id == event_id).first()
+    if event is None:
+        raise HTTPException(status_code=404, detail=f"Dogadjaj sa ID-ijem {event_id} nije pronadjen")
+    event_data = { 
+        "dogadjaj_id": event.dogadjaj_id,
+        "naziv_dogadjaja": event.naziv_dogadjaja,
+        "opis_dogadjaja": event.opis_dogadjaja,
+        "ulica": event.ulica,
+        "grad": event.grad,
+        "datum_dogadjaja": event.datum_dogadjaja,
+        "dogadjaj_slika": event.dogadjaj_slika,
+    }
+    return {"status":200, "data":event_data}
+
+
+#Uredjivanje dogadjaja
+@router.put("/event_edit")
+async def edit_event(event_request:EventSchema, db:Session=Depends(get_db)):
+    event=db.query(Event).filter(Event.dogadjaj_id==event_request.event_id).first()
+    if not event:
+        raise HTTPException(status_code=404, detail="Dogadjaj nije pronadjen")
+
+    event.naziv_dogadjaja=event_request.event_name
+    event.opis_dogadjaja=event_request.event_description
+    event.ulica=event_request.street
+    event.grad=event_request.city
+    event.datum_dogadjaja=event_request.event_date
+
+    db.commit()
+    return {"message": "Uspješno ste azurirali dogadjaj", "status": 200}
+
