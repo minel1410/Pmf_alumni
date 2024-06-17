@@ -195,7 +195,7 @@ const Layout = ({children}) => {
                         </a>
                     </li>
                     <li>
-                        <a href="/events" className="flex items-center gap-5 p-2 py-4 text-white hover:rounded-tl-[30px] hover:rounded-bl-[30px] hover:bg-white hover:text-charade-900 transition-all">
+                        <a href="/event" className="flex items-center gap-5 p-2 py-4 text-white hover:rounded-tl-[30px] hover:rounded-bl-[30px] hover:bg-white hover:text-charade-900 transition-all">
                                                         <FeatherIcon icon="calendar" />
 
                             <span className="ms-3">Eventi</span>
