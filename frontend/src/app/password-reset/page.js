@@ -8,6 +8,8 @@ import Input from '../components/Input';
 import Link from 'next/link';
 import { motion } from "framer-motion";
 import { useSearchParams } from 'next/navigation';
+import { Suspense } from "react";
+import { Main } from "next/document";
 
 const PwReset = () => {
 
@@ -197,4 +199,12 @@ const PwReset = () => {
   );
 };
 
-export default PwReset;
+export default function PwRes(){
+  
+  return(
+  <Suspense>
+    <PwReset></PwReset>
+  </Suspense>
+  );
+  
+};

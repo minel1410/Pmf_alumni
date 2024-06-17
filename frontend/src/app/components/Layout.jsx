@@ -181,7 +181,7 @@ const Layout = ({children}) => {
                         </a>
                     </li>}
                     <li>
-                        <a href="#" className="flex items-center gap-5 p-2 py-4 text-white hover:rounded-tl-[30px] hover:rounded-bl-[30px] hover:bg-white hover:text-charade-900 transition-all">
+                        <a href="/" className="flex items-center gap-5 p-2 py-4 text-white hover:rounded-tl-[30px] hover:rounded-bl-[30px] hover:bg-white hover:text-charade-900 transition-all">
                                                         <FeatherIcon icon="home" />
 
                             <span className="ms-3">Početna</span>
@@ -195,21 +195,21 @@ const Layout = ({children}) => {
                         </a>
                     </li>
                     <li>
-                        <a href="#" className="flex items-center gap-5 p-2 py-4 text-white hover:rounded-tl-[30px] hover:rounded-bl-[30px] hover:bg-white hover:text-charade-900 transition-all">
-                                                        <FeatherIcon icon="image" />
+                        <a href="/events" className="flex items-center gap-5 p-2 py-4 text-white hover:rounded-tl-[30px] hover:rounded-bl-[30px] hover:bg-white hover:text-charade-900 transition-all">
+                                                        <FeatherIcon icon="calendar" />
 
-                            <span className="ms-3">Objave</span>
+                            <span className="ms-3">Eventi</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#" className="flex items-center gap-5 p-2 py-4 text-white hover:rounded-tl-[30px] hover:rounded-bl-[30px] hover:bg-white hover:text-charade-900 transition-all">
+                        <a href="/jobs" className="flex items-center gap-5 p-2 py-4 text-white hover:rounded-tl-[30px] hover:rounded-bl-[30px] hover:bg-white hover:text-charade-900 transition-all">
                                                         <FeatherIcon icon="briefcase" />
 
                             <span className="ms-3">Poslovi</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#" className="flex items-center gap-5 p-2 py-4 text-white hover:rounded-tl-[30px] hover:rounded-bl-[30px] hover:bg-white hover:text-charade-900 transition-all">
+                        <a href={`/user/${user["id"]}`} className="flex items-center gap-5 p-2 py-4 text-white hover:rounded-tl-[30px] hover:rounded-bl-[30px] hover:bg-white hover:text-charade-900 transition-all">
                                                         <FeatherIcon icon="user" />
 
                             <span className="ms-3">Moj profil</span>
