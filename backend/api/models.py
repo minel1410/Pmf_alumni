@@ -128,3 +128,24 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     username: Union[str, None] = None
+
+class Job(Base):
+    __tablename__ = "posao"
+    posao_id = Column(Integer, primary_key=True, autoincrement=True, nullable=True)
+    naziv_posla = Column(String)
+    naziv_firme = Column(String)
+    email = Column(String)
+    opis_posla = Column(Text)
+    lokacija = Column(String)
+    tip_posla = Column(String)
+    posao_slika = Column(String)
+    datum_pocetka = Column(Date)
+    datum_zavrsetka = Column(Date)
+    korisnik_id = Column(Integer, ForeignKey("korisnik.id"), nullable=False)
+
+class TagJob(Base):
+    __tablename__ = "tag_posao"
+    id = Column(Integer, primary_key=True, autoincrement=True, nullable=True)
+    tag_id = Column(Integer, ForeignKey("tag.tag_id"), nullable=False)
+    posao_id = Column(Integer, ForeignKey("posao.posao_id"), nullable=False)
+

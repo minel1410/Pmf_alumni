@@ -1,6 +1,6 @@
 from pydantic import BaseModel, HttpUrl
 from typing import Optional
-from datetime import datetime
+from datetime import date, datetime
 
 
 class UserSchema(BaseModel):
@@ -82,3 +82,19 @@ class MessageResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+class JobSchema(BaseModel):
+    job_name: str
+    company_name: str
+    email: str
+    job_description: str
+    location: str
+    job_type: str
+    job_image: Optional[str] = None
+    start_date: date
+    end_date: date
+    user_id: int
+
+class TagJobSchema(BaseModel):
+    tag_id: int
+    job_id: int
