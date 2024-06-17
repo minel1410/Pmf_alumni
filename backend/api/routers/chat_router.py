@@ -77,10 +77,9 @@ async def post_message(message: MessageCreate, db: Session = Depends(get_db)):
         "message": message.tekst_poruke,
         "sender_id": message.posiljalac_id,
         "receiver_id": message.primalac_id,
-        "sent_at": new_message.datum_slanja.isoformat(),  # Add the sent at timestamp in ISO format
+        "sent_at": new_message.datum_slanja.isoformat(),
     }
 
-    # Emit WebSocket message with the message data
     await manager.broadcast(json.dumps(message_data))
 
 

@@ -8,7 +8,7 @@ import Modal from "../components/Modal";
 export default function C() {
     const [users, setUsers] = useState([]);
     const [user, setUser] = useState({});
-    const [loading, setLoading] = useState(true); // State to manage loading state
+    const [loading, setLoading] = useState(true); 
     const [searchQuery, setSearchQuery] = useState("");
 
     useEffect(() => {
@@ -33,18 +33,18 @@ export default function C() {
                 const response = await axios.get("http://localhost:8000/admin/all_users");
                 if (response.status === 200) {
                     setUsers(response.data);
-                    setLoading(false); // Set loading to false once users are fetched
+                    setLoading(false); 
                     console.log(response.data);
                 }
             } catch (error) {
                 console.error("Error fetching users:", error);
-                setLoading(false); // Set loading to false if an error occurs
+                setLoading(false); 
             }
         };
         fetchUsers();
     }, []);
 
-    // Function to filter users based on the search query
+
     const filteredUsers = users.filter(user =>
         user["ime"].toLowerCase().includes(searchQuery.toLowerCase()) ||
         user["prezime"].toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -69,8 +69,7 @@ export default function C() {
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 />
             </div>
-            
-            {/* Display loading indicator if loading */}
+
             {loading && <div className="w-ful h-96 flex items-center justify-center">
                 <div role="status">
     <svg aria-hidden="true" className="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -80,7 +79,7 @@ export default function C() {
 </div>
                 </div>}
             
-            {/* Display user cards once loaded */}
+
             {!loading && filteredUsers.map((user) => (
                 <UserCard key={user.id} userParam={user} />
             ))}

@@ -9,7 +9,7 @@ import ChatBubble from "../components/ChatBubble";
 const formatMessageTime = (timestamp) => {
     const messageDate = new Date(timestamp);
     if (isNaN(messageDate.getTime())) {
-        return ""; // Vrati prazan string ako datum nije validan
+        return ""; 
     }
 
     const currentDate = new Date();
@@ -19,12 +19,11 @@ const formatMessageTime = (timestamp) => {
       messageDate.getMonth() === currentDate.getMonth() &&
       messageDate.getFullYear() === currentDate.getFullYear()
     ) {
-      // Poruka je poslana danas, samo prikažemo vrijeme
+
       const hours = messageDate.getHours().toString().padStart(2, '0');
       const minutes = messageDate.getMinutes().toString().padStart(2, '0');
       return `${hours}:${minutes}`;
     } else {
-      // Poruka nije poslana danas, prikažemo datum i vrijeme
       const day = messageDate.getDate().toString().padStart(2, '0');
       const month = (messageDate.getMonth() + 1).toString().padStart(2, '0');
       const year = messageDate.getFullYear();
@@ -97,7 +96,7 @@ export default function Main() {
             tekst_poruke: message.message,
             posiljalac_id: message.sender_id,
             primalac_id: message.receiver_id,
-            datum_slanja: new Date().toISOString(), // Promijenjeno iz datum_prijema u datum_slanja
+            datum_slanja: new Date().toISOString(), 
           };
           setMessages((prevMessages) => [...prevMessages, receivedMessage]);
         }
@@ -110,7 +109,7 @@ export default function Main() {
   const formatMessageTime = (timestamp) => {
     const messageDate = new Date(timestamp);
     if (isNaN(messageDate.getTime())) {
-        return ""; // Vrati prazan string ako datum nije validan
+        return ""; 
     }
 
     const currentDate = new Date();
@@ -120,12 +119,10 @@ export default function Main() {
       messageDate.getMonth() === currentDate.getMonth() &&
       messageDate.getFullYear() === currentDate.getFullYear()
     ) {
-      // Poruka je poslana danas, samo prikažemo vrijeme
       const hours = messageDate.getHours().toString().padStart(2, '0');
       const minutes = messageDate.getMinutes().toString().padStart(2, '0');
       return `${hours}:${minutes}`;
     } else {
-      // Poruka nije poslana danas, prikažemo datum i vrijeme
       const day = messageDate.getDate().toString().padStart(2, '0');
       const month = (messageDate.getMonth() + 1).toString().padStart(2, '0');
       const year = messageDate.getFullYear();
