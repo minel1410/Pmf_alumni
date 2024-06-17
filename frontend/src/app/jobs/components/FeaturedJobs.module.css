@@ -1,0 +1,30 @@
+.container {
+    padding-top: 5rem;
+    padding-bottom: 3rem;
+    text-align: center;
+    padding: 1rem;
+  }
+  
+  .heading {
+    color: black;
+    font-size: 27px;
+    opacity: 0.9;
+    font-weight: bold;
+  }
+  
+  .description {
+    margin-top: 1rem;
+    font-size: 15px;
+    color: gray;
+    opacity: 0.8;
+    font-weight: medium;
+  }
+  
+  .jobList {
+    margin-top: 3rem;
+    width: 80%;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }

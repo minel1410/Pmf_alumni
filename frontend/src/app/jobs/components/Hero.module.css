@@ -1,0 +1,32 @@
+.container {
+    padding-top: 5rem;
+    padding-bottom: 3rem;
+  }
+  
+  .content {
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .heading {
+    grid-column: 1 / -1;
+    text-align: center;
+    font-size: 28px;
+    color: #272F3F;
+    line-height: 3rem;
+    font-weight: 800;
+  }
+  
+  .highlighted {
+    color: #15ACE3;
+  }
+  
+  .paragraph {
+    color: #94CEEC;
+    font-size: 16px;
+    margin-top: 1rem;
+  }
