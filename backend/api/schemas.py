@@ -83,8 +83,8 @@ class EventTagSchema(BaseModel):
 class PostSchema(BaseModel):
     post_id: int
     title: Optional[str] = None
-    content: str
-    post_date:date
+    content: Optional[str]=None
+    post_date:Optional [date]=None
     user_id: int
     post_image:Optional[str]=None
 

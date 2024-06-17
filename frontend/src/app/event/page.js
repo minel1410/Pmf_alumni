@@ -8,7 +8,7 @@ const EventPage = () => {
   const [user, setUser] = useState(null);
   const [events, setEvents] = useState([]);
 
-  // Funkcija za dohvacanje podataka o korisniku i događajima
+  // Funkcija za dohvaanje podataka o korisniku i događajima
   const fetchData = async () => {
     try {
       // Dohvati podatke o korisniku

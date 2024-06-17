@@ -64,11 +64,14 @@ async def get_user_posts(user_id:int, db:Session=Depends(get_db)):
     for post in posts:
         likes=db.query(func.count(PostLike.id)).filter(PostLike.post_id==post.post_id).scalar()
         dislikes=db.query(func.count(PostDislike.id)).filter(PostDislike.post_id==post.post_id).scalar()
+        user=db.query(User).filter(post.korisnik_id==User.id).first()
         post_data={
             "post_id":post.post_id,
             "naslov":post.naslov,
             "sadrzaj":post.sadrzaj,
             "datum_objave":post.datum_objave,
+            "korisnik_ime":user.ime,
+            "korisnik_prezime":user.prezime,
             "korisnik_id":post.korisnik_id,
             "naziv_slike":post.naziv_slike,
             "lajkovi":likes,

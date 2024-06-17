@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import EventForm from './components/EventForm';
 import EventList from './components/EventList';
+import { FaPlus } from 'react-icons/fa';
 
 
 const API_URL = 'http://localhost:8000';
@@ -79,19 +80,40 @@ const MyEventsPage = () => {
   };
 
   if (!user) {
-      return <div>Loading...</div>;
+      return <div>Učitavanje...</div>;
   }
 
   return (
-      <div>
-          <h1>Moji događaji</h1>
-          <button onClick={handleCreateEvent}>Kreiraj događaj</button>
-          {showCreateForm ? (
-              <EventForm onSave={handleSave} tags={tags} userId={user.id} event={selectedEvent} eventTypes={eventTypes} />
-          ) : (
-              <EventList events={events} onDelete={handleDelete} onEdit={handleEdit} showActions={true} />
-          )}
+    <div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <h1>Moji događaji</h1>
+        <button
+          onClick={handleCreateEvent}
+          style={{
+            backgroundColor: 'rgba(21, 172, 227, 1)',
+            color: 'white',
+            padding: '10px 20px',
+            borderRadius: '5px',
+            border: 'none',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <FaPlus style={{ marginRight: '5px' }} /> Kreiraj događaj
+        </button>
       </div>
+      {showCreateForm ? (
+        <div style={{ marginTop: '20px' }}>
+          <EventForm onSave={handleSave} tags={tags} userId={user.id} event={selectedEvent} eventTypes={eventTypes} />
+        </div>
+      ) : (
+        <div style={{ marginTop: '20px' }}>
+          <EventList events={events} onDelete={handleDelete} onEdit={handleEdit} showActions={true} />
+        </div>
+      )}
+    </div>
   );
 };
 
