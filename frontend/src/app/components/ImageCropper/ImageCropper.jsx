@@ -6,15 +6,17 @@ import ReactCrop, {
 } from "react-image-crop";
 import 'react-image-crop/dist/ReactCrop.css';
 import setCanvasPreview from "./setCanvasPreview";
+import axios from "axios";
 
 const ASPECT_RATIO = 1;
 const MIN_DIMENSION = 150;
 
-const ImageCropper = ({ closeModal, updateAvatar }) => {
+const ImageCropper = ({ closeModal, updateAvatar, userId }) => {
   const imgRef = useRef(null);
   const previewCanvasRef = useRef(null);
   const [imgSrc, setImgSrc] = useState("");
   const [crop, setCrop] = useState();
+  const [completedCrop, setCompletedCrop] = useState(null);
   const [error, setError] = useState("");
 
   const onSelectFile = (e) => {
@@ -63,49 +65,66 @@ const ImageCropper = ({ closeModal, updateAvatar }) => {
     setError("");
   };
 
-  const handleCropImage = () => {
+  const handleCropImage = async () => {
     setCanvasPreview(
       imgRef.current,
       previewCanvasRef.current,
-      convertToPixelCrop(
-        crop,
-        imgRef.current.width,
-        imgRef.current.height
-      )
+      convertToPixelCrop(completedCrop, imgRef.current.width, imgRef.current.height)
     );
     const dataUrl = previewCanvasRef.current.toDataURL();
+    await uploadImage(dataUrl);
     updateAvatar(dataUrl);
     resetCropper();
     closeModal();
   };
 
+  const uploadImage = async (dataUrl) => {
+    const blob = await (await fetch(dataUrl)).blob();
+    const file = new File([blob], "profile-picture.png", { type: "image/png" });
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const response = await axios.post(`http://localhost:8000/files/upload-avatar/${userId}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      if (response.status !== 200) {
+        throw new Error("Failed to upload image");
+      }
+
+      console.log("Image uploaded successfully:", response.data);
+    } catch (error) {
+      console.error("Error uploading image:", error);
+    }
+  };
+
   return (
     <>
-
-<div class="mb-3">
-  <label
-    class="mb-5 inline-block text-neutral-500"
-    >Odaberite profilnu sliku</label>
-  <input
-    class="relative m-0 block w-full min-w-0 flex-auto cursor-pointer rounded border border-solid border-secondary-500 bg-transparent bg-clip-padding px-3 py-[0.32rem] text-base font-normal text-surface transition duration-300 ease-in-out file:-mx-3 file:-my-[0.32rem] file:me-3 file:cursor-pointer file:overflow-hidden file:rounded-none file:border-0 file:border-e file:border-solid file:border-inherit file:bg-picton-blue-500 file:text-white file:px-3  file:py-[0.32rem] file:text-surface focus:border-primary focus:text-gray-700 focus:shadow-inset focus:outline-none"
-    type="file"
-accept="image/*"
-onChange={onSelectFile} />
-</div>
-    
-
-
+      <div className="mb-3">
+        <label className="mb-5 inline-block text-neutral-500">Odaberite profilnu sliku</label>
+        <input
+          className="relative m-0 block w-full min-w-0 flex-auto cursor-pointer rounded border border-solid border-secondary-500 bg-transparent bg-clip-padding px-3 py-[0.32rem] text-base font-normal text-surface transition duration-300 ease-in-out file:-mx-3 file:-my-[0.32rem] file:me-3 file:cursor-pointer file:overflow-hidden file:rounded-none file:border-0 file:border-e file:border-solid file:border-inherit file:bg-picton-blue-500 file:text-white file:px-3  file:py-[0.32rem] file:text-surface focus:border-primary focus:text-gray-700 focus:shadow-inset focus:outline-none"
+          type="file"
+          accept="image/*"
+          onChange={onSelectFile}
+        />
+      </div>
       {error && <p className="text-red-400 text-xs">{error}</p>}
       {imgSrc && (
         <div className="flex flex-col items-center">
           <ReactCrop
-          locked
             crop={crop}
-            onChange={(pixelCrop, percentCrop) => setCrop(percentCrop)}
+            onChange={(newCrop) => setCrop(newCrop)}
+            onComplete={(c) => setCompletedCrop(c)}
             circularCrop
-            keepSelection
             aspect={ASPECT_RATIO}
             minWidth={MIN_DIMENSION}
+            minHeight={MIN_DIMENSION}
+            maxWidth={imgRef.current ? imgRef.current.width : undefined}
+            maxHeight={imgRef.current ? imgRef.current.height : undefined}
           >
             <img
               ref={imgRef}
@@ -115,10 +134,9 @@ onChange={onSelectFile} />
               onLoad={onImageLoad}
             />
           </ReactCrop>
-
         </div>
       )}
-      {crop && (
+      {completedCrop && (
         <canvas
           ref={previewCanvasRef}
           className="mt-4"
@@ -126,11 +144,17 @@ onChange={onSelectFile} />
             display: "none",
             border: "1px solid black",
             objectFit: "contain",
-            width: 150,
-            height: 150,
+            width: completedCrop.width,
+            height: completedCrop.height,
           }}
         />
       )}
+      <button
+        className="p-5 w-full text-white bg-picton-blue-500 mt-5 rounded-md hover:opacity-75 transition-all"
+        onClick={handleCropImage}
+      >
+        PROMIJENI SLIKU
+      </button>
     </>
   );
 };

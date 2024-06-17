@@ -19,7 +19,6 @@ def start_application() -> FastAPI:
         allow_headers=["*"],
     )
 
-    # Registracija ruta
     app.include_router(auth_router.router, prefix="/auth", tags=["auth"])
     app.include_router(event_router.router, prefix="/events", tags=["events"])
     app.include_router(post_router.router,prefix="/posts",tags=["posts"])

@@ -29,10 +29,10 @@ const[user, setUser] = useState({})
     async function fetchUser() {
   try {
     const response = await axios.get("http://localhost:8000/auth/get_cookies", { withCredentials: true });
-    console.log('Response status:', response.status);  // Dodaj ovu liniju za debugiranje
+    console.log('Response status:', response.status); 
     if (response.status === 200) {
       setUser(response.data);
-      console.log('User data:', response.data);  // Dodaj ovu liniju za debugiranje
+      console.log('User data:', response.data); 
     } else {
       console.error("Neuspješan zahtjev za userom");
       window.location.href = '/auth';
@@ -47,12 +47,11 @@ const[user, setUser] = useState({})
     fetchTags();
     fetchUser();
   }, []);
-  // Funkcija za ažuriranje stanja interesa
   const handleTagClick = (id) => {
     if (!interests.includes(id)) {
-      setInterests([...interests, id]); // Dodaj novi interes u niz
+      setInterests([...interests, id]); 
     } else {
-      setInterests(interests.filter((interest) => interest !== id)); // Ukloni interes iz niza
+      setInterests(interests.filter((interest) => interest !== id)); 
     }
     console.log(interests)
   };
@@ -62,19 +61,16 @@ const[user, setUser] = useState({})
       const response = await axios.post(
         "http://localhost:8000/auth/interests-post", 
         { user, interests },
-        { withCredentials: true } // Dodaj ovo ako koristiš kolačiće
+        { withCredentials: true } 
       );
       if (response.status === 200) {
-        // Uspješan zahtjev
         console.log('Response data:', response.data);
         window.location.href = '/auth/upload';
       } else {
-        // Neuspješan zahtjev (iako je status 2xx)
         console.error('Unexpected response status:', response.status);
         window.location.href = '/auth';
       }
     } catch (error) {
-      // Greška u zahtjevu
       console.error('Error:', error.response ? error.response.data : error.message);
       window.location.href = '/auth';
     }

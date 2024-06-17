@@ -1,4 +1,13 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Text, Date
+from sqlalchemy import (
+    Boolean,
+    Column,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+    Date,
+    DateTime,
+)
 from database import Base
 from typing import Annotated, Union
 from pydantic import BaseModel
@@ -69,6 +78,35 @@ class Study(Base):
     naziv = Column(Text)
 
 
+from typing import List
+from fastapi import WebSocket
+
+
+class Message(Base):
+    __tablename__ = "poruke"
+    poruka_id = Column(Integer, primary_key=True, autoincrement=True)
+    tekst_poruke = Column(Text)
+    datum_slanja = Column(DateTime)
+    posiljalac_id = Column(Integer, ForeignKey("korisnik.id"), nullable=False)
+    primalac_id = Column(Integer, ForeignKey("korisnik.id"), nullable=False)
+
+
+class ConnectionManager:
+    def __init__(self):
+        self.active_connections: List[WebSocket] = []
+
+    async def connect(self, websocket: WebSocket):
+        await websocket.accept()
+        self.active_connections.append(websocket)
+
+    def disconnect(self, websocket: WebSocket):
+        self.active_connections.remove(websocket)
+
+    async def broadcast(self, message: str):
+        for connection in self.active_connections:
+            await connection.send_text(message)
+
+
 class Tag(Base):
     __tablename__ = "tag"
 
@@ -90,6 +128,27 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     username: Union[str, None] = None
+
+class Job(Base):
+    __tablename__ = "posao"
+    posao_id = Column(Integer, primary_key=True, autoincrement=True, nullable=True)
+    naziv_posla = Column(String)
+    naziv_firme = Column(String)
+    email = Column(String)
+    opis_posla = Column(Text)
+    lokacija = Column(String)
+    tip_posla = Column(String)
+    posao_slika = Column(String)
+    datum_pocetka = Column(Date)
+    datum_zavrsetka = Column(Date)
+    korisnik_id = Column(Integer, ForeignKey("korisnik.id"), nullable=False)
+
+class TagJob(Base):
+    __tablename__ = "tag_posao"
+    id = Column(Integer, primary_key=True, autoincrement=True, nullable=True)
+    tag_id = Column(Integer, ForeignKey("tag.tag_id"), nullable=False)
+    posao_id = Column(Integer, ForeignKey("posao.posao_id"), nullable=False)
+
 
 
 class EventType(Base):
