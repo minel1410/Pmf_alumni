@@ -149,3 +149,63 @@ class TagJob(Base):
     tag_id = Column(Integer, ForeignKey("tag.tag_id"), nullable=False)
     posao_id = Column(Integer, ForeignKey("posao.posao_id"), nullable=False)
 
+
+
+class EventType(Base):
+    __tablename__="tip_dogadjaja"
+
+    tip_dogadjaja_id=Column(Integer,primary_key=True,autoincrement=True,nullable=False)
+    naziv_tipa_dogadjaja=Column(String,nullable=False)
+
+class Event(Base):
+    __tablename__="dogadjaj"
+
+    dogadjaj_id=Column(Integer, primary_key=True, autoincrement=True,nullable=False)
+    naziv_dogadjaja=Column(String,nullable=False)
+    opis_dogadjaja=Column(Text,nullable=True)
+    ulica=Column(String,nullable=True)
+    grad=Column(String,nullable=True)
+    tip_dogadjaja_id=Column(Integer,ForeignKey("tip_dogadjaja.tip_dogadjaja_id"), nullable=False)
+    korisnik_id=Column(Integer,ForeignKey("korisnik.id"),nullable=False)
+    datum_dogadjaja=Column(Date, nullable=False)
+    dogadjaj_slika=Column(String,nullable=True)
+
+class EventTag(Base):
+    __tablename__="tag_dogadjaj"
+
+    tag_dogadjaja_id = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+    tag_id = Column(Integer, ForeignKey("tag.tag_id"), nullable=False) 
+    dogadjaj_id = Column(Integer, ForeignKey("dogadjaj.dogadjaj_id"),nullable=False)
+
+class Post(Base):
+    __tablename__="post"
+
+    post_id=Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+    naslov=Column(String, nullable=True)
+    sadrzaj=Column(Text,nullable=False)
+    datum_objave=Column(Date, nullable=False)
+    korisnik_id=Column(Integer,ForeignKey("korisnik.id"),nullable=False)
+    naziv_slike=Column(String,nullable=True)
+
+class PostDislike(Base):
+    __tablename__="dislajk_post"
+
+    id=Column(Integer,primary_key=True,autoincrement=True,nullable=False)
+    korisnik_id=Column(Integer,ForeignKey("korisnik.id"),nullable=False)
+    post_id=Column(Integer,ForeignKey("post.post_id"),nullable=False)
+
+class PostLike(Base):
+    __tablename__="lajk_post"
+    
+    id=Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+    korisnik_id=Column(Integer,ForeignKey("korisnik.id"),nullable=False)
+    post_id=Column(Integer,ForeignKey("post.post_id"),nullable=False)
+
+class PostCommentUser(Base):
+    __tablename__="komentar_korisnik_post"
+
+    id=Column(Integer, primary_key=True,autoincrement=True,nullable=False)
+    komentar=Column(Text, nullable=False)
+    datum_komentara=Column(Date,nullable=False)
+    korisnik_id=Column(Integer,ForeignKey("korisnik.id"),nullable=False)
+    post_id=Column(Integer,ForeignKey("post.post_id"),nullable=False)

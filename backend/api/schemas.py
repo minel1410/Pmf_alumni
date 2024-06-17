@@ -1,4 +1,5 @@
 from pydantic import BaseModel, HttpUrl
+from datetime import datetime,date
 from typing import Optional
 from datetime import date, datetime
 
@@ -58,6 +59,135 @@ class RegisterSchema(BaseModel):
     user: UserSchema
     course: CourseSchema
     department: DepartmentSchema
+
+
+class EventTypeSchema(BaseModel):
+    event_type_id:int 
+    event_type_name: str
+
+
+class EventSchema(BaseModel):
+    event_id:Optional[int]=None
+    event_name: Optional[str]=None
+    event_description: Optional[str] = None
+    street: Optional[str]= None
+    city: Optional[str]= None
+    event_type_id: Optional[int]=None
+    user_id: Optional[int]=None
+    event_date: Optional[datetime]=None
+    event_image: Optional[str] = None
+
+
+class EventTagSchema(BaseModel):
+    tag_id: int
+    event_id: int
+
+class PostSchema(BaseModel):
+    post_id: int
+    title: Optional[str] = None
+    content: Optional[str]=None
+    post_date:Optional [date]=None
+    user_id: int
+    post_image:Optional[str]=None
+
+class PostDislikeSchema(BaseModel):
+    user_id:int
+    post_id:int
+
+class PostLikeSchema(BaseModel):
+    user_id:int
+    post_id:int
+
+class PostCommentUserSchema(BaseModel):
+    comment:str
+    comment_date:date
+    user_id:int
+    post_id:int
+
+
+
+
+class MessageBase(BaseModel):
+    tekst_poruke: str
+    datum_slanja: datetime
+    posiljalac_id: int
+    primalac_id: int
+
+
+class MessageCreate(BaseModel):
+    tekst_poruke: str
+    posiljalac_id: int
+    primalac_id: int
+
+
+class MessageResponse(BaseModel):
+    poruka_id: int
+    tekst_poruke: str
+    datum_slanja: datetime
+    posiljalac_id: int
+    primalac_id: int
+
+    class Config:
+        from_attributes = True
+
+class JobSchema(BaseModel):
+    job_name: str
+    company_name: str
+    email: str
+    job_description: str
+    location: str
+    job_type: str
+    job_image: Optional[str] = None
+    start_date: date
+    end_date: date
+    user_id: int
+
+class TagJobSchema(BaseModel):
+    tag_id: int
+    job_id: int
+
+class EventTypeSchema(BaseModel):
+    event_type_id:int 
+    event_type_name: str
+
+
+class EventSchema(BaseModel):
+    event_id:Optional[int]=None
+    event_name: Optional[str]=None
+    event_description: Optional[str] = None
+    street: Optional[str]= None
+    city: Optional[str]= None
+    event_type_id: Optional[int]=None
+    user_id: Optional[int]=None
+    event_date: Optional[datetime]=None
+    event_image: Optional[str] = None
+
+
+class EventTagSchema(BaseModel):
+    tag_id: int
+    event_id: int
+
+class PostSchema(BaseModel):
+    post_id: int
+    title: Optional[str] = None
+    content: Optional[str]=None
+    post_date:Optional [date]=None
+    user_id: int
+    post_image:Optional[str]=None
+
+class PostDislikeSchema(BaseModel):
+    user_id:int
+    post_id:int
+
+class PostLikeSchema(BaseModel):
+    user_id:int
+    post_id:int
+
+class PostCommentUserSchema(BaseModel):
+    comment:str
+    comment_date:date
+    user_id:int
+    post_id:int
 
 
 class MessageBase(BaseModel):
