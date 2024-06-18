@@ -36,9 +36,9 @@ const UserPosts = () => {
 
   return (
     <div style={{ padding: '20px' }}> 
-      <h1>Moji postovi</h1>
+      <h1>Moje objave</h1>
       {posts.length === 0 ? (
-        <p>Nema pronađenih postova.</p>
+        <p>Nema pronađenih objava.</p>
       ) : (
         posts.map((post, index) => (
           <div key={post.post_id} style={{ marginBottom: index !== posts.length - 1 ? '20px' : '0' }}>

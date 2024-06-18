@@ -1,0 +1,47 @@
+.event-card {
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+    width: 100%;
+    background-color: rgba(39, 47, 63, 1);
+    color: #fff;
+  }
+  
+  .event-card-body {
+    padding: 20px;
+  }
+  
+  .event-card-title {
+    font-size: 1.25rem;
+    margin-bottom: 10px;
+  }
+  
+  .event-card-text {
+    color: #fff;
+  }
+  
+  .button-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px;
+  }
+  
+  .icon {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    margin-left: 10px;
+    transition: color 0.3s ease;
+  }
+  
+  .delete-icon {
+    color: #e74c3c;
+  }
+  
+  .edit-icon {
+    color: #3498db;
+  }
+  

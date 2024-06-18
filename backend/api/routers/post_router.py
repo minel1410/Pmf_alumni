@@ -107,25 +107,25 @@ async def delete_post(post_id:int, db:Session=Depends(get_db)):
 
 #Kreiranje posta
 @router.post("/create")
-async def create_post(post_data: PostSchema, db: Session = Depends(get_db)):
-    
+async def create_post(request: Request, db: Session = Depends(get_db)):
+    request_data = await request.json()
     last_post = db.query(Post).order_by(desc(Post.post_id)).first()
     last_post_id = last_post.post_id if last_post else 0
     new_post_id = last_post_id + 1
-
+ 
     new_post=Post(
         post_id=new_post_id,
-        naslov=post_data.title,
-        sadrzaj=post_data.content,
-        datum_objave=post_data.post_date,
-        korisnik_id=post_data.user_id,
-        naziv_slike=post_data.post_image
+        naslov=request_data['title'],
+        sadrzaj=request_data['content'],
+        datum_objave=request_data['post_date'],
+        korisnik_id=request_data['user_id'],
     )
-
+ 
     db.add(new_post)
     db.commit()
-
+ 
     return {"message": "Uspješno ste dodali novi post!", "post_id": new_post_id, "status": 200}
+
 
 #Uredjivanje posta
 @router.put("/edit-post")

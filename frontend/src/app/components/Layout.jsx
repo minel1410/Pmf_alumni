@@ -191,14 +191,35 @@ const Layout = ({children}) => {
                         <a href="/chat" className="flex items-center gap-5 p-2 py-4 text-white hover:rounded-tl-[30px] hover:rounded-bl-[30px] hover:bg-white hover:text-charade-900 transition-all">
                                                         <FeatherIcon icon="inbox" />
 
-                            <span className="ms-3">Inbox</span>
+                            <span className="ms-3">Pošta</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/post" className="flex items-center gap-5 p-2 py-4 text-white hover:rounded-tl-[30px] hover:rounded-bl-[30px] hover:bg-white hover:text-charade-900 transition-all">
+                                                        <FeatherIcon icon="image" />
+
+                            <span className="ms-3">Objave</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/user/my-posts" className="flex items-center gap-5 p-2 py-4 text-white hover:rounded-tl-[30px] hover:rounded-bl-[30px] hover:bg-white hover:text-charade-900 transition-all">
+                                                        <FeatherIcon icon="image" />
+
+                            <span className="ms-3">Moje objave</span>
                         </a>
                     </li>
                     <li>
                         <a href="/event" className="flex items-center gap-5 p-2 py-4 text-white hover:rounded-tl-[30px] hover:rounded-bl-[30px] hover:bg-white hover:text-charade-900 transition-all">
                                                         <FeatherIcon icon="calendar" />
 
-                            <span className="ms-3">Eventi</span>
+                            <span className="ms-3">Događaji</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/user/my-events" className="flex items-center gap-5 p-2 py-4 text-white hover:rounded-tl-[30px] hover:rounded-bl-[30px] hover:bg-white hover:text-charade-900 transition-all">
+                                                        <FeatherIcon icon="calendar" />
+
+                            <span className="ms-3">Moji događaji</span>
                         </a>
                     </li>
                     <li>
